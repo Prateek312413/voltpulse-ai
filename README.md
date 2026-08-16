@@ -52,7 +52,7 @@ flowchart TD
 ## Key Features
 
 - **Mathematical Gaussian Process Engine (from scratch)**:
-  - Transparent Cholesky factorization: $K = L L^T$ using `scipy.linalg.cholesky`.
+  - Transparent Cholesky factorization: `K = L Lᵀ` using `scipy.linalg.cholesky`.
   - Negative log marginal likelihood hyperparameter optimization via `scipy.optimize.minimize(method="L-BFGS-B")`.
   - **Bounded Deterministic Jitter Ladder**: `[0.0, 1e-10, 1e-8, 1e-6, 1e-4]`. If covariance is ill-conditioned or singular, the ladder progressively rescues decomposition without crashing or fabricating outputs.
   - Candidate kernel families: **RBF (Squared Exponential)**, **Matérn 3/2**, **Matérn 5/2**, **Rational Quadratic (RQ)**, and **ARD (Automatic Relevance Determination)**.
@@ -63,16 +63,16 @@ flowchart TD
   - Observation correction endpoint (`POST .../correct`): marks parent observation superseded, tracks lineage (`replaces_id`), and isolates active dataset.
 - **Deterministic 5-Tier Model Selection Hierarchy**:
   1. Valid execution status (`SUCCESS` > `FAILED`).
-  2. Lower validation RMSE on chronological holdout set (tolerance: $10^{-6}$).
+  2. Lower validation RMSE on chronological holdout set (tolerance: `1e-6`).
   3. Prediction-interval coverage closest to target (95% CI).
-  4. Lower validation MAE (tolerance: $10^{-6}$).
+  4. Lower validation MAE (tolerance: `1e-6`).
   5. Alphabetical kernel name tie-breaker (`Matern32` < `Matern52` < `RBF` < `RationalQuadratic`).
 - **Non-Destructive Forecast Versioning & Semantic Diff Engine**:
   - Automatically triggers reconciliation when late or corrected telemetry arrives.
-  - Generates new Forecast versions ($v_1 \to v_2$) while preserving historical records.
-  - Computes $\Delta \text{SOH}$, $\Delta \text{Uncertainty}$ ($\Delta \sigma$), kernel changes, and maps causal triggering observations.
+  - Generates new Forecast versions (`v1 → v2`) while preserving historical records.
+  - Computes $\Delta\text{SOH}$, $\Delta\text{Uncertainty}$ ($\Delta\sigma$), kernel changes, and maps causal triggering observations.
 - **Historical Time-Travel & Replay Verification**:
-  - Reconstructs exact forecast state as of historical telemetry version $V$.
+  - Reconstructs exact forecast state as of historical telemetry version `V`.
   - Bit-for-bit mathematical determinism verified across multi-pass replay runs ($\Delta < 10^{-7}$).
 - **Interactive Modern Web Dashboard**:
   - Interactive SVG/Canvas degradation chart with shaded 95% uncertainty envelope.
