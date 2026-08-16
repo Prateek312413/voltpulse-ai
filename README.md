@@ -84,22 +84,48 @@ flowchart TD
 ## Mathematical Derivations
 
 ### 1. Gaussian Process Regression Prior and Covariance
-Given observations $\mathcal{D} = \{(x_i, y_i)\}_{i=1}^N$ with $y_i = f(x_i) + \epsilon$, $\epsilon \sim \mathcal{N}(0, \sigma_n^2)$:
-$$K_{ij} = k(x_i, x_j) + (\sigma_n^2 + \delta) \delta_{ij}$$
+
+Given observations $\mathcal{D} = \{(x_i, y_i)\}_{i=1}^N$ with $y_i = f(x_i) + \epsilon$ and $\epsilon \sim \mathcal{N}(0, \sigma_n^2)$:
+
+```math
+K_{ij} = k(x_i, x_j) + (\sigma_n^2 + \delta) \delta_{ij}
+```
+
 where $\delta \in [0.0, 10^{-10}, 10^{-8}, 10^{-6}, 10^{-4}]$ is the bounded numerical jitter step.
 
 ### 2. Cholesky Factorization & Log-Marginal Likelihood
+
 The covariance matrix $K$ is factored into lower triangular matrix $L$:
-$$K = L L^T$$
+
+```math
+K = L L^T
+```
+
 The model parameters $\theta$ are optimized by minimizing the Negative Log Marginal Likelihood (NLML):
-$$-\log p(y|X, \theta) = \frac{1}{2} y^T \alpha + \sum_{i=1}^N \log L_{ii} + \frac{N}{2} \log(2\pi)$$
+
+```math
+-\log p(y \mid X, \theta) = \frac{1}{2} y^T \alpha + \sum_{i=1}^N \log L_{ii} + \frac{N}{2} \log(2\pi)
+```
+
 where $\alpha = L^T \backslash (L \backslash y)$ is solved via forward-backward triangular substitution.
 
 ### 3. Posterior Prediction on Query Cycle $x_*$
-$$k_* = K(X, x_*), \quad v = L \backslash k_*$$
-$$\mu(x_*) = k_*^T \alpha + \bar{y}$$
-$$\sigma^2(x_*) = k(x_*, x_*) - v^T v + \sigma_n^2$$
-$$95\%\text{ CI} = [\mu(x_*) - 1.960 \sigma(x_*), \; \mu(x_*) + 1.960 \sigma(x_*)]$$
+
+```math
+\mathbf{k}_* = K(X, x_*), \quad v = L \backslash \mathbf{k}_*
+```
+
+```math
+\mu(x_*) = \mathbf{k}_*^T \alpha + \bar{y}
+```
+
+```math
+\sigma^2(x_*) = k(x_*, x_*) - v^T v + \sigma_n^2
+```
+
+```math
+95\%\text{ CI} = [\mu(x_*) - 1.960 \sigma(x_*), \; \mu(x_*) + 1.960 \sigma(x_*)]
+```
 
 ---
 
