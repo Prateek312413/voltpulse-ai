@@ -4,6 +4,7 @@
 > **Themes:** Machine Learning / AI &bull; Social Good &bull; Web Development  
 > **Target Award:** Best Overall Project &bull; Most Innovative &bull; Most Practical  
 
+[![GitHub Repository](https://img.shields.io/badge/GitHub-neuroaccess--ai-181717?style=flat&logo=github)](https://github.com/Prateek312413/neuroaccess-ai)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-brightgreen.svg)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.110%2B-009688.svg)](https://fastapi.tiangolo.com/)

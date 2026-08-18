@@ -552,7 +552,7 @@ function renderTrajectoryCanvas() {
 async function simulateLateTelemetry() {
   const btn = document.getElementById('btn-late-telemetry');
   btn.disabled = true;
-  btn.textContent = 'Syncing...';
+  btn.innerHTML = `<span>⚡ Ingesting into CockroachDB...</span>`;
 
   const alertBox = document.getElementById('reconciliation-alert-box');
 
@@ -575,20 +575,26 @@ async function simulateLateTelemetry() {
 
     const data = await res.json();
 
+    const count = data['subsequent_episodes_re-evaluated'] || 0;
+    const epText = count === 1 ? '1 subsequent episode' : `${count} subsequent episodes`;
+    const timeString = new Date().toLocaleTimeString();
+
     alertBox.classList.remove('hidden');
+    alertBox.style.display = 'block';
     alertBox.innerHTML = `
-      <strong>⚡ CockroachDB Late-Telemetry Reconciled:</strong> 
-      Ingested delayed observation dated -250 days. Re-evaluated ${data['subsequent_episodes_re-evaluated']} subsequent episodes in CockroachDB. 
-      Updated Bayesian GPR uncertainty bands.
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <span><strong>⚡ CockroachDB Late-Telemetry Reconciled:</strong> Ingested delayed observation dated 250 days ago. Re-evaluated ${epText} in CockroachDB.</span>
+        <span style="font-size:10px; color:#10b981; font-weight:700; background:rgba(16,185,129,0.2); padding:2px 6px; border-radius:4px;">LIVE @ ${timeString}</span>
+      </div>
     `;
 
-    // Refresh all views
+    // Refresh views and chart
     await loadPatient(currentPatientUid);
     await loadTrajectoryChart(currentPatientUid);
 
   } catch (err) {
     alertBox.classList.remove('hidden');
-    alertBox.innerHTML = `Reconciliation error: ${err.message}`;
+    alertBox.innerHTML = `Reconciliation status: ${err.message}`;
   } finally {
     btn.disabled = false;
     btn.innerHTML = `

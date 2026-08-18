@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 from pydantic import BaseModel, Field
 from typing import List, Dict, Any, Optional
 import time
+import datetime
 
 from aegismed.database.connection import get_db, active_backend
 from aegismed.database.models import Patient, ClinicalEpisode, ReflectiveInsight, WorkingMemorySession, SemanticGuideline
