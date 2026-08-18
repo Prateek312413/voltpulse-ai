@@ -1,8 +1,9 @@
 # AegisMed: Resilient Clinical Agentic Memory Engine
 ### CockroachDB × AWS Hackathon — Official Submission
 
-[![Tests](https://img.shields.io/badge/pytest-50%20passed%20(100%25)-success?style=for-the-badge)](tests/)
+[![Tests](https://img.shields.io/badge/pytest-18%20passed%20(100%25)-success?style=for-the-badge)](tests/)
 [![CockroachDB](https://img.shields.io/badge/CockroachDB-Distributed%20SQL%20%2B%20pgvector-blue?style=for-the-badge&logo=cockroachlabs)](https://www.cockroachlabs.com/)
+
 [![AWS Bedrock](https://img.shields.io/badge/AWS-Bedrock%20Claude%203.5%20%26%20Titan-FF9900?style=for-the-badge&logo=amazon-aws)](https://aws.amazon.com/bedrock/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.110+-009688?style=for-the-badge&logo=fastapi)](https://fastapi.tiangolo.com)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
