@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ title }}</title>
+  <link rel="stylesheet" href="/static/css/app.css">
+  <meta name="description" content="NeuroAccess AI: Enterprise Assistive Neuro-Adaptive Communication & Dysarthric Speech Reconstruction Platform.">
+</head>
+<body>
+
+  <!-- Top Navigation & Accessibility Bar -->
+  <header class="app-header" role="banner">
+    <div class="brand-section">
+      <div class="brand-badge">NEURO-ACCESS</div>
+      <h1 class="brand-title">NeuroAccess AI</h1>
+      <div class="status-pill" aria-label="System status online">
+        <span class="status-dot"></span> Core DSP Ready (16 kHz)
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <button id="judgeTourBtn" class="btn btn-primary" style="background: #0284c7;" aria-label="Start 1-Click Guided Judge Evaluation Tour">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px;"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+        1-Click Guided Demo
+      </button>
+      <button id="autoScanBtn" class="btn btn-outline" aria-label="Toggle single-switch scanning mode">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px;"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+        Switch Scan (Spacebar)
+      </button>
+      <button id="highContrastBtn" class="btn btn-outline" aria-label="Toggle high contrast accessibility mode">
+        High Contrast
+      </button>
+      <button id="sosBtn" class="btn btn-sos" aria-label="Emergency SOS trigger button">
+        SOS Emergency
+      </button>
+    </div>
+  </header>
+
+  <!-- Judge Guided Tour Notification Banner -->
+  <div id="judgeTourBanner" style="display: none; background: #f0f9ff; border-bottom: 2px solid #0284c7; padding: 0.75rem 1.5rem; font-size: 0.85rem; color: #0369a1;">
+    <div style="max-width: 1440px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;">
+      <div id="judgeTourStepText"><strong>Demonstration Tour Active:</strong> Running automated end-to-end evaluation pipeline...</div>
+      <button id="closeTourBtn" style="background: none; border: none; font-size: 1.1rem; cursor: pointer; font-weight: 700; color: #0369a1;">&times;</button>
+    </div>
+  </div>
+
+  <!-- Main Accessible Workspace -->
+  <main class="main-container" role="main">
+
+    <!-- Left Column: AAC Matrix & Predictive Intent Flow -->
+    <section class="panel" aria-labelledby="aacHeading">
+      <div class="panel-header">
+        <h2 id="aacHeading" class="panel-title">
+          Adaptive AAC Matrix (Switch & Gaze Accessible)
+        </h2>
+        <div class="aac-tabs" role="tablist">
+          <button class="aac-tab-btn active" data-category="essentials" role="tab" aria-selected="true">Essentials</button>
+          <button class="aac-tab-btn" data-category="daily_care" role="tab" aria-selected="false">Daily Care</button>
+          <button class="aac-tab-btn" data-category="social" role="tab" aria-selected="false">Social & Courtesy</button>
+        </div>
+      </div>
+
+      <div class="switch-control-bar">
+        <span><em>Dwell mouse over an item or activate <strong>Switch Scan</strong> and press <strong>Spacebar</strong> to select.</em></span>
+      </div>
+
+      <!-- AAC Matrix Grid -->
+      <div class="aac-matrix-grid" id="aacMatrixGrid" role="grid" aria-label="AAC communication grid">
+        <!-- Rendered dynamically with SVG icons by aac_matrix.js -->
+      </div>
+
+      <!-- Selected Tokens Ribbon -->
+      <div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+          <span style="font-weight: 700; font-size: 0.82rem; color: var(--text-secondary); text-transform: uppercase;">Active Composed Tokens</span>
+          <button id="clearTokensBtn" class="btn btn-outline" style="padding: 0.2rem 0.5rem; font-size: 0.72rem;">Clear Tokens</button>
+        </div>
+        <div class="token-ribbon" id="tokensRibbon" aria-live="polite">
+          <span style="color: var(--text-muted); font-size: 0.85rem;">Select symbols from the matrix or capture voice to compose...</span>
+        </div>
+      </div>
+
+      <!-- Intent Prediction Stream -->
+      <div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem;">
+          <span style="font-weight: 700; font-size: 0.82rem; color: var(--text-secondary); text-transform: uppercase;">Predicted Intent Formulations (Context-Aware Engine)</span>
+        </div>
+        <div class="predictions-list" id="predictionsList" aria-live="polite">
+          <div style="color: var(--text-muted); font-size: 0.85rem; padding: 0.5rem 0;">Predicted natural sentences will appear here automatically.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Right Column: Speech DSP Reconstruction & Emergency Sentinel -->
+    <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+
+      <!-- Acoustic Phoneme Restoration Engine -->
+      <section class="panel" aria-labelledby="dspHeading">
+        <div class="panel-header">
+          <h2 id="dspHeading" class="panel-title">
+            Acoustic Signal DSP & Formant Tracking
+          </h2>
+          <span class="badge badge-medical">Edge DSP</span>
+        </div>
+
+        <p style="font-size: 0.8rem; color: var(--text-secondary);">
+          Spectral subtraction noise mitigation and LPC formant analysis for dysarthric / degraded speech input.
+        </p>
+
+        <!-- Oscilloscope Waveform Canvas -->
+        <div class="waveform-container">
+          <canvas id="waveformCanvas"></canvas>
+        </div>
+
+        <div id="restoredWordBanner" class="panel" style="display: none; background: var(--accent-teal-subtle); border-color: rgba(13, 148, 136, 0.3); padding: 0.65rem 0.85rem; font-size: 0.82rem;">
+          <!-- Populated on speech decode -->
+        </div>
+
+        <div class="audio-controls" style="flex-wrap: wrap;">
+          <button id="recordBtn" class="btn btn-primary" style="flex: 1; min-width: 170px;">
+            Capture Voice Input
+          </button>
+          <button id="simulateDysarthriaBtn" class="btn btn-outline" title="Test with simulated slurred audio sample">
+            Simulate Dysarthria
+          </button>
+        </div>
+
+        <!-- Pre-recorded Clinical Test Presets -->
+        <div style="background: var(--bg-surface-subtle); border-radius: var(--radius-sm); padding: 0.65rem; border: 1px solid var(--border-subtle); display: flex; flex-direction: column; gap: 0.4rem;">
+          <label for="sampleWavSelect" style="font-size: 0.75rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase;">
+            Clinical Audio Samples (16 kHz PCM WAV)
+          </label>
+          <div style="display: flex; gap: 0.4rem;">
+            <select id="sampleWavSelect" style="flex: 1; padding: 0.35rem 0.55rem; border-radius: var(--radius-xs); border: 1px solid var(--border-strong); background: var(--bg-surface); font-family: inherit; font-size: 0.8rem; color: var(--text-primary);">
+              <option value="/static/audio_samples/sample_water.wav">Sample 1: Dysarthric 'Water' (16kHz)</option>
+              <option value="/static/audio_samples/sample_help.wav">Sample 2: Slurred 'Help' (16kHz)</option>
+              <option value="/static/audio_samples/sample_pain.wav">Sample 3: Muffled 'Pain' (16kHz)</option>
+              <option value="/static/audio_samples/sample_doctor.wav">Sample 4: Faint 'Doctor' (16kHz)</option>
+            </select>
+            <button id="playAndDecodeSampleBtn" class="btn btn-outline" style="padding: 0.35rem 0.75rem; font-size: 0.8rem;">
+              Decode Sample
+            </button>
+          </div>
+        </div>
+
+        <div id="recordStatus" style="font-size: 0.75rem; color: var(--text-muted); text-align: center;">
+          Ready to capture acoustic telemetry.
+        </div>
+      </section>
+
+      <!-- Emergency Sentinel & Caregiver Dispatch -->
+      <section class="panel" aria-labelledby="sentinelHeading">
+        <div class="panel-header">
+          <h2 id="sentinelHeading" class="panel-title">
+            Emergency Sentinel & Incident Telemetry
+          </h2>
+          <span class="badge badge-emergency">Active Sentinel</span>
+        </div>
+
+        <div style="font-size: 0.8rem; color: var(--text-secondary); line-height: 1.4;">
+          Automated multi-tier caregiver alerting with synthetic geolocation coordinates and immutable audit trail.
+        </div>
+
+        <div id="incidentsContainer">
+          <div style="color: var(--text-muted); font-size: 0.8rem;">Loading sentinel records...</div>
+        </div>
+      </section>
+
+      <!-- Technical Architecture Overview Specs -->
+      <section class="panel">
+        <div class="panel-header">
+          <h3 class="panel-title" style="font-size: 0.88rem;">
+            Engine Specifications & Diagnostic Telemetry
+          </h3>
+          <button id="runDiagnosticsBtn" class="btn btn-outline" style="padding: 0.2rem 0.5rem; font-size: 0.72rem;">
+            Run Diagnostics
+          </button>
+        </div>
+        <ul style="font-size: 0.78rem; color: var(--text-secondary); list-style-type: none; display: flex; flex-direction: column; gap: 0.35rem;">
+          <li><strong>Acoustic DSP:</strong> Spectral Subtraction + 12th-Order LPC Formant Root Tracker</li>
+          <li><strong>Phonetic Alignment:</strong> Weighted Dysarthric Levenshtein Distance Matrix</li>
+          <li><strong>Intent Expander:</strong> Multi-Context Semantic Matrix Model</li>
+          <li><strong>Accessibility:</strong> WCAG 2.1 AAA Compliant (Switch & Dwell Gaze)</li>
+        </ul>
+        <div id="diagnosticsResultBox" style="display: none; background: var(--bg-surface-subtle); border-radius: var(--radius-xs); padding: 0.55rem; font-size: 0.75rem; border: 1px solid var(--border-subtle);">
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="app-footer" role="contentinfo">
+    <div>
+      <strong>NeuroAccess AI</strong> &mdash; Production Build for NeuralSprint 2026 (AI &bull; Social Good &bull; Web)
+    </div>
+    <div>
+      <span>Status: All Subsystems Nominal (16.0 kHz)</span>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="/static/js/audio_recorder.js"></script>
+  <script src="/static/js/aac_matrix.js"></script>
+  <script src="/static/js/app.js"></script>
+</body>
+</html>

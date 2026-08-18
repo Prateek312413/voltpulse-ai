@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  # AegisMed FastAPI Clinical Memory Engine
+  aegismed-app:
+    build: .
+    container_name: aegismed-engine
+    ports:
+      - "8000:8000"
+    environment:
+      - COCKROACH_DB_URL=cockroachdb://root@roach-node1:26257/aegismed?sslmode=disable
+      - USE_FALLBACK_DB_IF_UNAVAILABLE=true
+      - AWS_DEFAULT_REGION=us-east-1
+      - OFFLINE_AI_MODE=false
+    depends_on:
+      - roach-node1
+    restart: unless-stopped
+
+  # CockroachDB Single-Node / Multi-Node Local Cluster (for full distributed SQL testing)
+  roach-node1:
+    image: cockroachdb/cockroach:v24.2.0
+    container_name: roach-node1
+    command: start-single-node --insecure --http-port=8080
+    ports:
+      - "26257:26257"
+      - "8080:8080" # CockroachDB Web UI Dashboard
+    volumes:
+      - roach-data:/cockroach/cockroach-data
+    restart: unless-stopped
+
+volumes:
+  roach-data:

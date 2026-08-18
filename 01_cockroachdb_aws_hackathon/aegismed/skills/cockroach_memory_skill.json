@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "name": "cockroach_clinical_memory_skill",
+  "version": "1.0.0",
+  "description": "Machine-executable Agent Skill for hierarchical agentic memory retrieval, transactional lock arbitration, and vector similarity search in CockroachDB.",
+  "author": "AegisMed Core Team",
+  "capabilities": [
+    {
+      "name": "episodic_vector_search",
+      "description": "Executes cosine similarity vector search over longitudinal clinical encounters using CockroachDB pgvector extension.",
+      "sql_template": "SELECT episode_uid, chief_complaint, diagnosis, prescribed_medications, (1.0 - (embedding <=> :query_vector)) AS similarity FROM clinical_episodes WHERE patient_uid = :patient_uid ORDER BY embedding <=> :query_vector ASC LIMIT :top_k;",
+      "parameters": {
+        "patient_uid": "string",
+        "query_vector": "array[float]",
+        "top_k": "integer"
+      }
+    },
+    {
+      "name": "acquire_session_lock",
+      "description": "Acquires a pessimistic SERIALIZABLE row lock on working memory state to synchronize concurrent multi-agent swarms in CockroachDB.",
+      "sql_template": "SELECT session_id, version, active_agent, lock_owner FROM working_memory_sessions WHERE session_id = :session_id FOR UPDATE;",
+      "parameters": {
+        "session_id": "string"
+      }
+    },
+    {
+      "name": "reconcile_delayed_telemetry",
+      "description": "Inserts out-of-order delayed telemetry observations and performs deterministic replay of subsequent episodes.",
+      "sql_template": "INSERT INTO clinical_episodes (episode_uid, patient_uid, timestamp, chief_complaint, diagnosis, lab_results, embedding) VALUES (:episode_uid, :patient_uid, :delayed_timestamp, :chief_complaint, :diagnosis, :lab_results, :embedding);",
+      "parameters": {
+        "episode_uid": "string",
+        "patient_uid": "string",
+        "delayed_timestamp": "timestamp",
+        "chief_complaint": "string",
+        "diagnosis": "string",
+        "lab_results": "json",
+        "embedding": "array[float]"
+      }
+    }
+  ]
+}

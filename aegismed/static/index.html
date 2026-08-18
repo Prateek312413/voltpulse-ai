@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AegisMed — Resilient Clinical Agentic Memory Engine (CockroachDB × AWS)</title>
+  <meta name="description" content="Enterprise Multi-Agent Clinical Intelligence System with 4-Tier Persistent Agentic Memory powered by CockroachDB and AWS Bedrock.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Header Bar -->
+  <header class="top-bar">
+    <div class="brand-group">
+      <div class="brand-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          <path d="m9 12 2 2 4-4"/>
+        </svg>
+      </div>
+      <div>
+        <h1 class="brand-title">AegisMed</h1>
+        <span class="brand-subtitle">Clinical Agentic Memory Engine &bull; CockroachDB &times; AWS Bedrock</span>
+      </div>
+    </div>
+
+    <div class="header-controls">
+      <div class="status-indicator">
+        <span class="status-dot"></span>
+        <span id="db-status-label">CockroachDB Memory Engine: Online</span>
+      </div>
+      <div class="scenario-selector-wrap">
+        <label for="patient-select">Patient Profile:</label>
+        <select id="patient-select" class="form-select">
+          <option value="P-1001">P-1001: Marcus Vance (Allergy Memory Test)</option>
+          <option value="P-1002">P-1002: Elena Rostova (Renal Trajectory Test)</option>
+          <option value="P-1003">P-1003: David Chen (Cardiovascular Emergency)</option>
+        </select>
+      </div>
+      <button id="btn-reset-demo" class="btn btn-secondary btn-sm" title="Re-seed benchmark clinical cases">Reset Scenarios</button>
+    </div>
+  </header>
+
+  <!-- Main Application Layout -->
+  <main class="app-layout">
+    <!-- LEFT PANEL: Patient Demographics, History & Reflective Meta-Memory -->
+    <aside class="panel left-panel">
+      <div class="panel-header">
+        <h2 class="panel-title">Longitudinal Memory & Patient EHR</h2>
+        <span class="badge" id="patient-age-gender">54y Male &bull; O+</span>
+      </div>
+
+      <div class="patient-card" id="patient-summary-card">
+        <h3 class="patient-name" id="patient-name-display">Marcus Vance</h3>
+        <div class="patient-tags">
+          <div class="tag-group">
+            <span class="tag-label">Allergies:</span>
+            <div id="patient-allergies-list" class="tag-container">
+              <span class="tag tag-danger">Penicillin</span>
+            </div>
+          </div>
+          <div class="tag-group">
+            <span class="tag-label">Chronic Conditions:</span>
+            <div id="patient-conditions-list" class="tag-container">
+              <span class="tag tag-neutral">Primary Hypertension</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Reflective Insights Section (Tier 4) -->
+      <div class="sub-section">
+        <div class="section-title-row">
+          <h3>Tier 4: Autonomous Reflective Insights</h3>
+          <span class="tier-chip tier-reflective">CockroachDB Meta-Memory</span>
+        </div>
+        <div id="reflective-insights-container" class="insights-scroll-list">
+          <div class="loading-placeholder">Evaluating historical patterns...</div>
+        </div>
+      </div>
+
+      <!-- Historical Episodic Memory Section (Tier 2) -->
+      <div class="sub-section flex-grow">
+        <div class="section-title-row">
+          <h3>Tier 2: Episodic Memory Timeline</h3>
+          <span class="tier-chip tier-episodic">Vector Embeddings</span>
+        </div>
+        <div id="episodes-timeline-container" class="timeline-scroll-list">
+          <div class="loading-placeholder">Loading past encounters...</div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- CENTER PANEL: Active Clinical Consultation & Multi-Agent Swarm -->
+    <section class="panel center-panel">
+      <div class="panel-header">
+        <div>
+          <h2 class="panel-title">Active Consultation & Multi-Agent Swarm</h2>
+          <p class="panel-desc">ACID Transactional State & Consensus Arbitration in CockroachDB</p>
+        </div>
+        <div id="session-badge" class="session-badge">Session: Ready</div>
+      </div>
+
+      <!-- Interactive Consultation Form -->
+      <div class="consultation-form-card">
+        <div class="form-row">
+          <div class="form-group flex-2">
+            <label for="chief-complaint-input">Chief Complaint / Acute Presentation:</label>
+            <input type="text" id="chief-complaint-input" class="form-input" 
+                   value="Severe sore throat, painful swallowing, fever for 2 days, and productive cough." 
+                   placeholder="Enter patient presentation...">
+          </div>
+          <div class="form-group flex-1">
+            <label>Acuity / Action:</label>
+            <button id="btn-run-swarm" class="btn btn-primary">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <polygon points="5 3 19 12 5 21 5 3"/>
+              </svg>
+              Execute Swarm
+            </button>
+          </div>
+        </div>
+
+        <div class="form-row vitals-row">
+          <div class="vital-input-group">
+            <span class="vital-label">BP (mmHg)</span>
+            <input type="text" id="vital-bp" class="vital-input" value="130/85">
+          </div>
+          <div class="vital-input-group">
+            <span class="vital-label">Heart Rate</span>
+            <input type="number" id="vital-hr" class="vital-input" value="88">
+          </div>
+          <div class="vital-input-group">
+            <span class="vital-label">SpO2 (%)</span>
+            <input type="number" id="vital-spo2" class="vital-input" value="98">
+          </div>
+          <div class="vital-input-group">
+            <span class="vital-label">Temp (°C)</span>
+            <input type="number" id="vital-temp" step="0.1" class="vital-input" value="38.4">
+          </div>
+          <div class="vital-input-group flex-2">
+            <span class="vital-label">Reported Symptoms</span>
+            <input type="text" id="reported-symptoms" class="vital-input" value="Sore throat, Fever, Dysphagia, Cough">
+          </div>
+        </div>
+      </div>
+
+      <!-- Real-Time Bayesian Biomarker Trajectory & Late-Telemetry Reconciliation -->
+      <div class="trajectory-card">
+        <div class="section-title-row">
+          <div>
+            <h3>Bayesian Biomarker Trajectory (GPR ± 95% Confidence Bounds)</h3>
+            <span class="trajectory-sub">Uncertainty-Aware Longitudinal Prognosis & Late-Telemetry Reconciler</span>
+          </div>
+          <button id="btn-late-telemetry" class="btn btn-secondary btn-sm" title="Simulate delayed out-of-order lab ingestion">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+            </svg>
+            Simulate Late-Arriving Lab
+          </button>
+        </div>
+        <div class="trajectory-chart-wrapper">
+          <canvas id="trajectory-chart-canvas" class="trajectory-canvas"></canvas>
+        </div>
+        <div id="reconciliation-alert-box" class="reconciliation-box hidden"></div>
+      </div>
+
+      <!-- Agent Thought & Deliberation Stream -->
+      <div class="agent-deliberation-container">
+        <div class="section-title-row">
+          <h3>Real-Time Multi-Agent Reasoning Stream</h3>
+          <span class="status-badge" id="swarm-state-badge">Idle</span>
+        </div>
+
+        <div id="agent-thought-stream" class="thought-stream-box">
+          <div class="empty-state-prompt">
+            Click <strong>"Execute Swarm"</strong> to initiate multi-agent clinical reasoning with CockroachDB persistent memory.
+          </div>
+        </div>
+      </div>
+
+      <!-- Consensus Decision & Prescription Plan -->
+      <div id="final-decision-panel" class="final-decision-card hidden">
+        <div class="decision-header">
+          <h3 id="decision-diagnosis-title">Diagnosis: Acute Bacterial Pharyngitis</h3>
+          <span class="icd-tag" id="decision-icd-code">ICD-10: J02.9</span>
+        </div>
+        <div id="safety-alert-banner" class="safety-alert-banner hidden"></div>
+        <div class="decision-body">
+          <div class="decision-col">
+            <h4>Safety-Approved Prescription:</h4>
+            <ul id="approved-meds-list" class="med-list"></ul>
+          </div>
+          <div class="decision-col">
+            <h4>Blocked / Contraindicated Agents:</h4>
+            <ul id="blocked-meds-list" class="med-list blocked"></ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RIGHT PANEL: 4-Tier Memory Graph Visualizer & Direct Vector Inspector -->
+    <aside class="panel right-panel">
+      <div class="panel-header">
+        <h2 class="panel-title">CockroachDB Agentic Memory Graph</h2>
+        <span class="tier-count" id="active-nodes-count">Nodes: 0</span>
+      </div>
+
+      <!-- Interactive Canvas Graph Container -->
+      <div class="memory-graph-wrapper">
+        <div class="graph-legend">
+          <span class="legend-item"><span class="dot dot-working"></span> Tier 1: Working</span>
+          <span class="legend-item"><span class="dot dot-episodic"></span> Tier 2: Episodic</span>
+          <span class="legend-item"><span class="dot dot-semantic"></span> Tier 3: Semantic</span>
+          <span class="legend-item"><span class="dot dot-reflective"></span> Tier 4: Reflective</span>
+        </div>
+        <canvas id="memory-graph-canvas" class="graph-canvas"></canvas>
+      </div>
+
+      <!-- Direct Vector Search Tester -->
+      <div class="vector-search-card">
+        <div class="section-title-row">
+          <h3>CockroachDB Vector Similarity Inspector</h3>
+        </div>
+        <div class="vector-search-input-wrap">
+          <input type="text" id="vector-query-input" class="form-input form-input-sm" 
+                 value="allergic reaction rash to antibiotics" 
+                 placeholder="Search memory vectors...">
+          <button id="btn-vector-search" class="btn btn-secondary btn-sm">Vector Recall</button>
+        </div>
+        <div id="vector-search-results" class="vector-results-list"></div>
+      </div>
+    </aside>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

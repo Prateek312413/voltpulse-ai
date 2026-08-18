@@ -1,0 +1,557 @@
+{
+  "metadata": {
+    "project": "ResilioNet AI",
+    "hackathon": "HackSocial 2026",
+    "generated_at": 1786980879.450127,
+    "total_sos_signals": 20,
+    "total_depots": 3,
+    "total_zones": 5
+  },
+  "supply_hubs": [
+    {
+      "hub_id": "HUB-CENTRAL-01",
+      "name": "Central Metro Emergency Logistics Warehouse",
+      "latitude": 37.77,
+      "longitude": -122.417,
+      "capacity_units": 5000,
+      "available_vehicles": 12,
+      "operational_status": "ACTIVE",
+      "inventory": {
+        "potable_water": {
+          "item_id": "WTR-01",
+          "name": "Potable Water Gallons",
+          "category": "WATER",
+          "quantity": 300,
+          "unit": "gallons",
+          "is_perishable": false
+        },
+        "mre_food_rations": {
+          "item_id": "MRE-01",
+          "name": "Humanitarian MRE Rations",
+          "category": "FOOD",
+          "quantity": 250,
+          "unit": "packs",
+          "is_perishable": false
+        },
+        "trauma_first_aid_kit": {
+          "item_id": "MED-01",
+          "name": "Trauma First Aid Kits",
+          "category": "MEDICAL",
+          "quantity": 60,
+          "unit": "kits",
+          "is_perishable": false
+        },
+        "insulin_cold_pack": {
+          "item_id": "MED-02",
+          "name": "Refrigerated Rapid Insulin",
+          "category": "MEDICAL",
+          "quantity": 25,
+          "unit": "vials",
+          "is_perishable": true,
+          "cold_chain_required": true
+        },
+        "oxygen_concentrator": {
+          "item_id": "MED-03",
+          "name": "Portable Oxygen Concentrators",
+          "category": "MEDICAL",
+          "quantity": 15,
+          "unit": "units",
+          "is_perishable": false
+        },
+        "infant_formula_diapers": {
+          "item_id": "PEDIATRIC-01",
+          "name": "Infant Formula & Diapers Bundle",
+          "category": "PEDIATRIC",
+          "quantity": 40,
+          "unit": "kits",
+          "is_perishable": true
+        },
+        "thermal_blankets_tarp": {
+          "item_id": "SHELTER-01",
+          "name": "Mylar Thermal Blankets & Tarps",
+          "category": "SHELTER",
+          "quantity": 180,
+          "unit": "units",
+          "is_perishable": false
+        },
+        "portable_generator_fuel": {
+          "item_id": "POWER-01",
+          "name": "Diesel Fuel Cans (5 Gallon)",
+          "category": "POWER",
+          "quantity": 30,
+          "unit": "cans",
+          "is_perishable": false
+        }
+      }
+    },
+    {
+      "hub_id": "HUB-NORTH-02",
+      "name": "North Harbor Red Cross Mutual-Aid Depot",
+      "latitude": 37.795,
+      "longitude": -122.41,
+      "capacity_units": 2500,
+      "available_vehicles": 6,
+      "operational_status": "ACTIVE",
+      "inventory": {
+        "potable_water": {
+          "item_id": "WTR-01",
+          "name": "Potable Water Gallons",
+          "category": "WATER",
+          "quantity": 150,
+          "unit": "gallons",
+          "is_perishable": false
+        },
+        "mre_food_rations": {
+          "item_id": "MRE-01",
+          "name": "Humanitarian MRE Rations",
+          "category": "FOOD",
+          "quantity": 120,
+          "unit": "packs",
+          "is_perishable": false
+        },
+        "trauma_first_aid_kit": {
+          "item_id": "MED-01",
+          "name": "Trauma First Aid Kits",
+          "category": "MEDICAL",
+          "quantity": 30,
+          "unit": "kits",
+          "is_perishable": false
+        },
+        "thermal_blankets_tarp": {
+          "item_id": "SHELTER-01",
+          "name": "Mylar Thermal Blankets & Tarps",
+          "category": "SHELTER",
+          "quantity": 90,
+          "unit": "units",
+          "is_perishable": false
+        },
+        "portable_generator_fuel": {
+          "item_id": "POWER-01",
+          "name": "Diesel Fuel Cans (5 Gallon)",
+          "category": "POWER",
+          "quantity": 12,
+          "unit": "cans",
+          "is_perishable": false
+        }
+      }
+    },
+    {
+      "hub_id": "HUB-SOUTH-03",
+      "name": "South Bay Civic Resilience Staging Grounds",
+      "latitude": 37.74,
+      "longitude": -122.4,
+      "capacity_units": 3000,
+      "available_vehicles": 8,
+      "operational_status": "ACTIVE",
+      "inventory": {
+        "potable_water": {
+          "item_id": "WTR-01",
+          "name": "Potable Water Gallons",
+          "category": "WATER",
+          "quantity": 200,
+          "unit": "gallons",
+          "is_perishable": false
+        },
+        "mre_food_rations": {
+          "item_id": "MRE-01",
+          "name": "Humanitarian MRE Rations",
+          "category": "FOOD",
+          "quantity": 180,
+          "unit": "packs",
+          "is_perishable": false
+        },
+        "trauma_first_aid_kit": {
+          "item_id": "MED-01",
+          "name": "Trauma First Aid Kits",
+          "category": "MEDICAL",
+          "quantity": 40,
+          "unit": "kits",
+          "is_perishable": false
+        },
+        "insulin_cold_pack": {
+          "item_id": "MED-02",
+          "name": "Refrigerated Rapid Insulin",
+          "category": "MEDICAL",
+          "quantity": 15,
+          "unit": "vials",
+          "is_perishable": true,
+          "cold_chain_required": true
+        },
+        "oxygen_concentrator": {
+          "item_id": "MED-03",
+          "name": "Portable Oxygen Concentrators",
+          "category": "MEDICAL",
+          "quantity": 10,
+          "unit": "units",
+          "is_perishable": false
+        },
+        "infant_formula_diapers": {
+          "item_id": "PEDIATRIC-01",
+          "name": "Infant Formula & Diapers Bundle",
+          "category": "PEDIATRIC",
+          "quantity": 25,
+          "unit": "kits",
+          "is_perishable": true
+        }
+      }
+    }
+  ],
+  "zone_profiles": [
+    {
+      "zone_id": "ZONE-COASTAL-4",
+      "zone_name": "Lower Marina & Coastal District",
+      "demographics": {
+        "total_population": 28000,
+        "elderly_ratio": 0.24,
+        "infant_ratio": 0.11,
+        "poverty_ratio": 0.22,
+        "chronic_illness_ratio": 0.18
+      },
+      "infra": {
+        "hospital_transit_minutes": 28.0,
+        "grid_reliability_score": 0.35,
+        "single_access_road_risk": true,
+        "clean_water_access_score": 0.4,
+        "cellular_coverage_pct": 0.6
+      },
+      "hazard": {
+        "flood_water_level_meters": 1.8,
+        "wildfire_proximity_km": null,
+        "power_outage_active": true,
+        "ambient_temp_celsius": 12.0,
+        "roads_blocked_count": 4
+      }
+    },
+    {
+      "zone_id": "ZONE-HIGHLAND-2",
+      "zone_name": "Highland Ridge Senior Enclave",
+      "demographics": {
+        "total_population": 14000,
+        "elderly_ratio": 0.42,
+        "infant_ratio": 0.04,
+        "poverty_ratio": 0.12,
+        "chronic_illness_ratio": 0.28
+      },
+      "infra": {
+        "hospital_transit_minutes": 35.0,
+        "grid_reliability_score": 0.4,
+        "single_access_road_risk": true,
+        "clean_water_access_score": 0.75,
+        "cellular_coverage_pct": 0.7
+      },
+      "hazard": {
+        "flood_water_level_meters": 0.0,
+        "wildfire_proximity_km": 6.5,
+        "power_outage_active": true,
+        "ambient_temp_celsius": 29.0,
+        "roads_blocked_count": 2
+      }
+    },
+    {
+      "zone_id": "ZONE-WESTSIDE-3",
+      "zone_name": "Westside Community & School District",
+      "demographics": {
+        "total_population": 45000,
+        "elderly_ratio": 0.14,
+        "infant_ratio": 0.16,
+        "poverty_ratio": 0.28,
+        "chronic_illness_ratio": 0.14
+      },
+      "infra": {
+        "hospital_transit_minutes": 18.0,
+        "grid_reliability_score": 0.6,
+        "single_access_road_risk": false,
+        "clean_water_access_score": 0.55,
+        "cellular_coverage_pct": 0.85
+      },
+      "hazard": {
+        "flood_water_level_meters": 0.8,
+        "wildfire_proximity_km": null,
+        "power_outage_active": false,
+        "ambient_temp_celsius": 14.0,
+        "roads_blocked_count": 1
+      }
+    },
+    {
+      "zone_id": "ZONE-DOWNTOWN-1",
+      "zone_name": "Downtown Civic Core & Transit Plaza",
+      "demographics": {
+        "total_population": 65000,
+        "elderly_ratio": 0.12,
+        "infant_ratio": 0.06,
+        "poverty_ratio": 0.31,
+        "chronic_illness_ratio": 0.16
+      },
+      "infra": {
+        "hospital_transit_minutes": 8.0,
+        "grid_reliability_score": 0.75,
+        "single_access_road_risk": false,
+        "clean_water_access_score": 0.8,
+        "cellular_coverage_pct": 0.92
+      },
+      "hazard": {
+        "flood_water_level_meters": 0.3,
+        "wildfire_proximity_km": null,
+        "power_outage_active": false,
+        "ambient_temp_celsius": 8.0,
+        "roads_blocked_count": 1
+      }
+    },
+    {
+      "zone_id": "ZONE-MOUNTAIN-6",
+      "zone_name": "Mount Tamalpais Rural Foothills",
+      "demographics": {
+        "total_population": 6200,
+        "elderly_ratio": 0.3,
+        "infant_ratio": 0.05,
+        "poverty_ratio": 0.09,
+        "chronic_illness_ratio": 0.15
+      },
+      "infra": {
+        "hospital_transit_minutes": 55.0,
+        "grid_reliability_score": 0.2,
+        "single_access_road_risk": true,
+        "clean_water_access_score": 0.5,
+        "cellular_coverage_pct": 0.35
+      },
+      "hazard": {
+        "flood_water_level_meters": 0.0,
+        "wildfire_proximity_km": 3.8,
+        "power_outage_active": true,
+        "ambient_temp_celsius": 32.0,
+        "roads_blocked_count": 3
+      }
+    }
+  ],
+  "distress_feed": [
+    {
+      "request_id": "REQ-0001",
+      "raw_text": "EMERGENCY: Water rising past 2nd floor window! Family of 5 trapped including 1 newborn baby and my 78yo mother with diabetes. Insulin ruined. Location: 1420 Riverfront Ave, Sector 4. Coordinates: 37.7749, -122.4194. Please send boat and medical supplies!",
+      "zone_id": "ZONE-COASTAL-4",
+      "category_hint": "TRAPPED_SEARCH_RESCUE",
+      "required_items": {
+        "insulin_cold_pack": 2,
+        "potable_water": 10,
+        "infant_formula_diapers": 1,
+        "trauma_first_aid_kit": 1
+      },
+      "timestamp_created": 1786980879.450127
+    },
+    {
+      "request_id": "REQ-0002",
+      "raw_text": "Elderly retirement center without power for 18 hours. 12 residents on oxygen concentrators. Generator fuel is down to 5%. Urgent diesel delivery or battery banks needed at 880 Highland Ridge Road (37.7833, -122.4167).",
+      "zone_id": "ZONE-HIGHLAND-2",
+      "category_hint": "POWER_INFRASTRUCTURE",
+      "required_items": {
+        "portable_generator_fuel": 4,
+        "oxygen_concentrator": 3,
+        "potable_water": 20
+      },
+      "timestamp_created": 1786980579.450127
+    },
+    {
+      "request_id": "REQ-0003",
+      "raw_text": "Roof collapsed during tremor! 3 construction workers trapped under concrete debris. One has severe arterial bleeding from leg fracture. Need immediate heavy search and rescue + trauma tourniquet at 505 Warehouse Row (37.7650, -122.4250).",
+      "zone_id": "ZONE-INDUSTRIAL-1",
+      "category_hint": "CRITICAL_MEDICAL",
+      "required_items": {
+        "trauma_first_aid_kit": 3,
+        "potable_water": 5
+      },
+      "timestamp_created": 1786980279.450127
+    },
+    {
+      "request_id": "REQ-0004",
+      "raw_text": "Community shelter has taken in 45 flood evacuees. Completely out of clean drinking water and baby formula. 8 toddlers crying and dehydrated. Need potable water tanker and infant nutrition at Westside Community Gym (37.7550, -122.4350).",
+      "zone_id": "ZONE-WESTSIDE-3",
+      "category_hint": "WATER_FOOD_DEFICIT",
+      "required_items": {
+        "potable_water": 50,
+        "infant_formula_diapers": 10,
+        "mre_food_rations": 40
+      },
+      "timestamp_created": 1786979979.450127
+    },
+    {
+      "request_id": "REQ-0005",
+      "raw_text": "Extreme cold temperatures (-8C). Homeless shelter overflow, 30 people shivering under highway overpass at 12th & Market St. High hypothermia risk. Need thermal emergency blankets, hot rations, and winter sleeping bags (37.7720, -122.4150).",
+      "zone_id": "ZONE-DOWNTOWN-1",
+      "category_hint": "SHELTER_EXPOSURE",
+      "required_items": {
+        "thermal_blankets_tarp": 35,
+        "mre_food_rations": 30,
+        "potable_water": 15
+      },
+      "timestamp_created": 1786979679.450127
+    },
+    {
+      "request_id": "REQ-0006",
+      "raw_text": "Wildfire smoke index hazardous (AQI 450). Pediatric asthma clinic running out of albuterol inhalers and HEPA air purifiers. 6 children experiencing acute respiratory distress at East Health Center (37.7900, -122.4000).",
+      "zone_id": "ZONE-EASTVALE-5",
+      "category_hint": "CRITICAL_MEDICAL",
+      "required_items": {
+        "oxygen_concentrator": 6,
+        "trauma_first_aid_kit": 2
+      },
+      "timestamp_created": 1786979379.450127
+    },
+    {
+      "request_id": "REQ-0007",
+      "raw_text": "SOS: We are 4 elderly neighbors cut off by mudslide on Mountain View Trail (37.8000, -122.4400). Single access road blocked by downed timber. Food and water exhausted. Phone battery at 4%.",
+      "zone_id": "ZONE-MOUNTAIN-6",
+      "category_hint": "TRAPPED_SEARCH_RESCUE",
+      "required_items": {
+        "mre_food_rations": 16,
+        "potable_water": 12,
+        "thermal_blankets_tarp": 4
+      },
+      "timestamp_created": 1786979079.450127
+    },
+    {
+      "request_id": "REQ-0008",
+      "raw_text": "Local clinic dialysis unit power failing. Need auxiliary fuel cell or backup battery pack for 8 patients awaiting treatment at Bayview Health Annex (37.7300, -122.3850).",
+      "zone_id": "ZONE-BAYVIEW-7",
+      "category_hint": "POWER_INFRASTRUCTURE",
+      "required_items": {
+        "portable_generator_fuel": 3,
+        "potable_water": 10
+      },
+      "timestamp_created": 1786978779.450127
+    },
+    {
+      "request_id": "REQ-0009",
+      "raw_text": "We have 1 people stuck without food or clean water after storm blocked Elm St near #2271.",
+      "zone_id": "ZONE-WESTSIDE-3",
+      "category_hint": "AUTO_INGESTED",
+      "required_items": {
+        "potable_water": 2,
+        "mre_food_rations": 3
+      },
+      "timestamp_created": 1786975430.450127
+    },
+    {
+      "request_id": "REQ-0010",
+      "raw_text": "Need medical aid immediately at 8599 Sunset Ave. Grandmother suffering heart palpitations and severe dehydration. Headcount 1.",
+      "zone_id": "ZONE-COASTAL-4",
+      "category_hint": "AUTO_INGESTED",
+      "required_items": {
+        "potable_water": 2,
+        "mre_food_rations": 3
+      },
+      "timestamp_created": 1786975196.450127
+    },
+    {
+      "request_id": "REQ-0011",
+      "raw_text": "URGENT: Flooding reached 1 ft inside home at 7639 Oakland Blvd. 1 family members trapped. No water for 24h.",
+      "zone_id": "ZONE-HIGHLAND-2",
+      "category_hint": "AUTO_INGESTED",
+      "required_items": {
+        "potable_water": 2,
+        "mre_food_rations": 3
+      },
+      "timestamp_created": 1786975603.450127
+    },
+    {
+      "request_id": "REQ-0012",
+      "raw_text": "Power down and freezing cold at 249 Pine Ridge Way. 1 people including 0 senior shivering. Need blankets and food rations.",
+      "zone_id": "ZONE-COASTAL-4",
+      "category_hint": "AUTO_INGESTED",
+      "required_items": {
+        "potable_water": 2,
+        "mre_food_rations": 3
+      },
+      "timestamp_created": 1786978065.450127
+    },
+    {
+      "request_id": "REQ-0013",
+      "raw_text": "Need medical aid immediately at 8636 Pine Ridge Way. Grandmother suffering heart palpitations and severe dehydration. Headcount 3.",
+      "zone_id": "ZONE-DOWNTOWN-1",
+      "category_hint": "AUTO_INGESTED",
+      "required_items": {
+        "potable_water": 6,
+        "mre_food_rations": 9
+      },
+      "timestamp_created": 1786980167.450127
+    },
+    {
+      "request_id": "REQ-0014",
+      "raw_text": "Need medical aid immediately at 6051 Mission St. Grandmother suffering heart palpitations and severe dehydration. Headcount 4.",
+      "zone_id": "ZONE-COASTAL-4",
+      "category_hint": "AUTO_INGESTED",
+      "required_items": {
+        "potable_water": 8,
+        "mre_food_rations": 12,
+        "trauma_first_aid_kit": 1
+      },
+      "timestamp_created": 1786976486.450127
+    },
+    {
+      "request_id": "REQ-0015",
+      "raw_text": "We have 1 people stuck without food or clean water after storm blocked Valley Rd near #2819.",
+      "zone_id": "ZONE-HIGHLAND-2",
+      "category_hint": "AUTO_INGESTED",
+      "required_items": {
+        "potable_water": 2,
+        "mre_food_rations": 3
+      },
+      "timestamp_created": 1786976555.450127
+    },
+    {
+      "request_id": "REQ-0016",
+      "raw_text": "URGENT: Flooding reached 2 ft inside home at 947 Pine Ridge Way. 1 family members trapped. No water for 24h.",
+      "zone_id": "ZONE-HIGHLAND-2",
+      "category_hint": "AUTO_INGESTED",
+      "required_items": {
+        "potable_water": 2,
+        "mre_food_rations": 3
+      },
+      "timestamp_created": 1786975028.450127
+    },
+    {
+      "request_id": "REQ-0017",
+      "raw_text": "URGENT: Flooding reached 3 ft inside home at 5342 Valley Rd. 5 family members trapped. No water for 24h.",
+      "zone_id": "ZONE-WESTSIDE-3",
+      "category_hint": "AUTO_INGESTED",
+      "required_items": {
+        "potable_water": 10,
+        "mre_food_rations": 15,
+        "infant_formula_diapers": 2
+      },
+      "timestamp_created": 1786974827.450127
+    },
+    {
+      "request_id": "REQ-0018",
+      "raw_text": "Power down and freezing cold at 1278 Sunset Ave. 4 people including 0 senior shivering. Need blankets and food rations.",
+      "zone_id": "ZONE-HIGHLAND-2",
+      "category_hint": "AUTO_INGESTED",
+      "required_items": {
+        "potable_water": 8,
+        "mre_food_rations": 12
+      },
+      "timestamp_created": 1786975274.450127
+    },
+    {
+      "request_id": "REQ-0019",
+      "raw_text": "Power down and freezing cold at 3703 Elm St. 7 people including 1 senior shivering. Need blankets and food rations.",
+      "zone_id": "ZONE-DOWNTOWN-1",
+      "category_hint": "AUTO_INGESTED",
+      "required_items": {
+        "potable_water": 14,
+        "mre_food_rations": 21,
+        "trauma_first_aid_kit": 1
+      },
+      "timestamp_created": 1786976463.450127
+    },
+    {
+      "request_id": "REQ-0020",
+      "raw_text": "URGENT: Flooding reached 2 ft inside home at 1363 Mission St. 3 family members trapped. No water for 24h.",
+      "zone_id": "ZONE-MOUNTAIN-6",
+      "category_hint": "AUTO_INGESTED",
+      "required_items": {
+        "potable_water": 6,
+        "mre_food_rations": 9
+      },
+      "timestamp_created": 1786975084.450127
+    }
+  ]
+}

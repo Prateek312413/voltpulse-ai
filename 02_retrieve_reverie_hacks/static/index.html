@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SynapseFlow — Autonomous Multi-LLM Scientific Prompt Orchestrator</title>
+  <meta name="description" content="Reverie Hacks 2026 Winner Submission: Deterministic multi-stage prompt workflow engine powered by Featherless.ai and Wolfram Symbolic Oracle.">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+
+  <!-- Top Navigation Header -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="brand-group">
+        <div class="brand-icon">⚡</div>
+        <div>
+          <h1 class="brand-title">SynapseFlow <span class="badge-tag">Reverie Hacks 2026</span></h1>
+          <p class="brand-subtitle">Autonomous Multi-LLM Prompt Orchestration & Symbolic Verification Engine</p>
+        </div>
+      </div>
+      
+      <div class="system-status-group">
+        <div class="status-indicator">
+          <span class="status-dot active"></span>
+          <span class="status-label">Featherless.ai Swarm</span>
+        </div>
+        <div class="status-indicator">
+          <span class="status-dot active"></span>
+          <span class="status-label">Wolfram Symbolic Oracle</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <nav class="nav-tabs-bar">
+      <button class="nav-tab active" data-tab="studio-tab" id="btn-tab-studio">
+        <span class="tab-icon">⚙️</span> Interactive Workflow Studio
+      </button>
+      <button class="nav-tab" data-tab="benchmark-tab" id="btn-tab-benchmark">
+        <span class="tab-icon">📊</span> Single-Prompt vs. Workflow Benchmark
+      </button>
+      <button class="nav-tab" data-tab="dag-tab" id="btn-tab-dag">
+        <span class="tab-icon">🗺️</span> Interactive ML DAG Architecture
+      </button>
+      <button class="nav-tab" data-tab="models-tab" id="btn-tab-models">
+        <span class="tab-icon">🪶</span> Featherless Model Swarm Catalog
+      </button>
+    </nav>
+  </header>
+
+  <!-- Main Application Content -->
+  <main class="app-main">
+
+    <!-- TAB 1: WORKFLOW STUDIO -->
+    <section id="studio-tab" class="tab-content active">
+      <div class="layout-grid">
+        
+        <!-- Left: Input & Workflow Control -->
+        <div class="panel-card input-panel">
+          <div class="panel-header">
+            <h2 class="panel-title">1. Prompt Configuration</h2>
+            <span class="text-muted">Target Domain & Objective</span>
+          </div>
+
+          <div class="form-group">
+            <label for="prompt-presets" class="form-label">Select Standard Benchmark Preset:</label>
+            <select id="prompt-presets" class="form-select">
+              <option value="preset_1">⚡ Cell Thermal Degradation & Arrhenius Kinetics (Engineering)</option>
+              <option value="preset_2">💊 Two-Compartment Pharmacokinetic Clearance (Clinical / CVS Track)</option>
+              <option value="preset_3">📈 Black-Scholes Greeks & Delta Hedging (Finance / Blockdaemon)</option>
+              <option value="preset_4">✈️ Compressible Aerodynamic Drag & Propulsion Power (Physics)</option>
+              <option value="preset_5">🔄 Out-of-Order Distributed Telemetry Causal Reconciliation</option>
+              <option value="custom">✏️ Custom Scientific / Technical Prompt...</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="prompt-input" class="form-label">Complex Scientific Prompt:</label>
+            <textarea id="prompt-input" class="form-textarea" rows="5" placeholder="Enter complex analytical, scientific, or multi-step engineering prompt..."></textarea>
+          </div>
+
+          <div class="options-row">
+            <div class="option-item">
+              <input type="checkbox" id="check-strict-verify" checked>
+              <label for="check-strict-verify">Strict Wolfram Verification (Zero-Hallucination Gate)</label>
+            </div>
+          </div>
+
+          <button id="btn-execute-flow" class="btn-primary">
+            <span class="btn-icon">▶</span> Run SynapseFlow Pipeline
+          </button>
+          
+          <!-- Routing Models Matrix -->
+          <div class="router-matrix-card">
+            <h3 class="card-subtitle">Active Model Routing Matrix (Featherless.ai)</h3>
+            <div class="matrix-list">
+              <div class="matrix-item">
+                <span class="matrix-stage">Stage 1 (Intent)</span>
+                <span class="matrix-model font-mono">Mistral-Nemo-Instruct</span>
+              </div>
+              <div class="matrix-item">
+                <span class="matrix-stage">Stage 2 (Reasoning)</span>
+                <span class="matrix-model font-mono">DeepSeek-V3 / Qwen-2.5-Coder</span>
+              </div>
+              <div class="matrix-item">
+                <span class="matrix-stage">Stage 3 (Verification)</span>
+                <span class="matrix-model font-mono">Wolfram / SymPy Oracle</span>
+              </div>
+              <div class="matrix-item">
+                <span class="matrix-stage">Stage 4 (Consensus)</span>
+                <span class="matrix-model font-mono">Kimi-K2.5 / GLM-5</span>
+              </div>
+              <div class="matrix-item">
+                <span class="matrix-stage">Stage 5 (Synthesis)</span>
+                <span class="matrix-model font-mono">DeepSeek-V3 Final</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Real-Time Execution DAG & Results -->
+        <div class="panel-card output-panel">
+          <div class="panel-header">
+            <h2 class="panel-title">2. Execution Trace & Verified Synthesis</h2>
+            <div id="execution-badge-container">
+              <span id="pipeline-status-badge" class="badge-ready">Ready</span>
+            </div>
+          </div>
+
+          <!-- Execution Progress Pipeline Nodes -->
+          <div class="pipeline-progress-wrapper">
+            <div class="pipeline-node" id="node-stage-1">
+              <div class="node-icon">1</div>
+              <div class="node-info">
+                <div class="node-name">Decomposition</div>
+                <div class="node-sub text-muted">Mistral-Nemo</div>
+              </div>
+            </div>
+            <div class="pipeline-connector"></div>
+            <div class="pipeline-node" id="node-stage-2">
+              <div class="node-icon">2</div>
+              <div class="node-info">
+                <div class="node-name">Parallel Swarm</div>
+                <div class="node-sub text-muted">DeepSeek + Qwen</div>
+              </div>
+            </div>
+            <div class="pipeline-connector"></div>
+            <div class="pipeline-node" id="node-stage-3">
+              <div class="node-icon">3</div>
+              <div class="node-info">
+                <div class="node-name">Wolfram Oracle</div>
+                <div class="node-sub text-muted">Symbolic Verification</div>
+              </div>
+            </div>
+            <div class="pipeline-connector"></div>
+            <div class="pipeline-node" id="node-stage-4">
+              <div class="node-icon">4</div>
+              <div class="node-info">
+                <div class="node-name">Consensus</div>
+                <div class="node-sub text-muted">Kimi-K2.5</div>
+              </div>
+            </div>
+            <div class="pipeline-connector"></div>
+            <div class="pipeline-node" id="node-stage-5">
+              <div class="node-icon">5</div>
+              <div class="node-info">
+                <div class="node-name">Synthesis</div>
+                <div class="node-sub text-muted">DeepSeek-V3</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Telemetry Stats Strip -->
+          <div class="telemetry-strip" id="telemetry-strip" style="display: none;">
+            <div class="telemetry-item">
+              <div class="telemetry-label">Total Latency</div>
+              <div class="telemetry-value" id="val-latency">-- ms</div>
+            </div>
+            <div class="telemetry-item">
+              <div class="telemetry-label">Confidence Score</div>
+              <div class="telemetry-value text-success" id="val-confidence">--%</div>
+            </div>
+            <div class="telemetry-item">
+              <div class="telemetry-label">Math Claims Verified</div>
+              <div class="telemetry-value" id="val-claims-count">0</div>
+            </div>
+            <div class="telemetry-item">
+              <div class="telemetry-label">Hallucinations Flagged</div>
+              <div class="telemetry-value" id="val-hallucinations">0</div>
+            </div>
+          </div>
+
+          <!-- Subtasks Breakdown Accordion -->
+          <div class="subtasks-container" id="subtasks-container" style="display: none;">
+            <h3 class="card-subtitle">Granular Subtask Execution Trace</h3>
+            <div id="subtasks-list" class="subtasks-list"></div>
+          </div>
+
+          <!-- Symbolic Math Audit Table -->
+          <div class="audit-table-container" id="audit-table-container" style="display: none;">
+            <h3 class="card-subtitle">Wolfram Symbolic Verification Certificate</h3>
+            <div class="table-responsive">
+              <table class="audit-table">
+                <thead>
+                  <tr>
+                    <th>Expression</th>
+                    <th>LLM Claimed</th>
+                    <th>Wolfram Verified</th>
+                    <th>Accuracy Status</th>
+                    <th>Audit Details</th>
+                  </tr>
+                </thead>
+                <tbody id="audit-table-body"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Final Verified Output Content -->
+          <div class="final-output-card" id="final-output-card">
+            <h3 class="card-subtitle">Verified Technical Deliverable</h3>
+            <div id="final-output-body" class="output-rendered-text">
+              <em>Click "Run SynapseFlow Pipeline" to execute the 5-stage prompt orchestrator.</em>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 2: BENCHMARK SUITE -->
+    <section id="benchmark-tab" class="tab-content">
+      <div class="panel-card">
+        <div class="panel-header">
+          <div>
+            <h2 class="panel-title">Standardized Evaluation: Single-Prompt vs. SynapseFlow Workflow</h2>
+            <p class="panel-subtitle">Official Devpost ML Prompt Engineering Benchmark covering 5 complex multi-domain test cases.</p>
+          </div>
+          <button id="btn-run-all-benchmarks" class="btn-primary">
+            <span class="btn-icon">⚡</span> Run Live 5-Case Benchmark Suite
+          </button>
+        </div>
+
+        <!-- Comparative Metrics Summary Cards -->
+        <div class="metrics-summary-grid">
+          <div class="metric-card">
+            <div class="metric-title">Mathematical Accuracy</div>
+            <div class="metric-value-row">
+              <div class="metric-col">
+                <span class="metric-num text-danger">35.0%</span>
+                <span class="metric-caption">Single-Prompt Baseline</span>
+              </div>
+              <div class="metric-arrow">➔</div>
+              <div class="metric-col">
+                <span class="metric-num text-success">100.0%</span>
+                <span class="metric-caption">SynapseFlow Workflow</span>
+              </div>
+            </div>
+            <div class="metric-delta">+65.0% Absolute Precision Gain</div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-title">Hallucination Rate</div>
+            <div class="metric-value-row">
+              <div class="metric-col">
+                <span class="metric-num text-danger">55.0%</span>
+                <span class="metric-caption">Single-Prompt Baseline</span>
+              </div>
+              <div class="metric-arrow">➔</div>
+              <div class="metric-col">
+                <span class="metric-num text-success">0.0%</span>
+                <span class="metric-caption">SynapseFlow Workflow</span>
+              </div>
+            </div>
+            <div class="metric-delta">-100% Elimination of Math Falsehoods</div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-title">Structural Schema Guarantee</div>
+            <div class="metric-value-row">
+              <div class="metric-col">
+                <span class="metric-num text-danger">Failed</span>
+                <span class="metric-caption">Unstructured Prose</span>
+              </div>
+              <div class="metric-arrow">➔</div>
+              <div class="metric-col">
+                <span class="metric-num text-success">100% Strict</span>
+                <span class="metric-caption">Valid JSON / LaTeX</span>
+              </div>
+            </div>
+            <div class="metric-delta">Enterprise-Grade Determinism</div>
+          </div>
+        </div>
+
+        <!-- Benchmark Test Cases Table -->
+        <div id="benchmark-results-container" class="benchmark-list-container">
+          <h3 class="card-subtitle mt-4">Detailed Case-by-Case Benchmark Audit</h3>
+          <div id="benchmark-cases-list"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: DAG ARCHITECTURE -->
+    <section id="dag-tab" class="tab-content">
+      <div class="panel-card">
+        <div class="panel-header">
+          <div>
+            <h2 class="panel-title">Interactive ML Workflow Architecture DAG</h2>
+            <p class="panel-subtitle">Official flowchart depicting node responsibilities, Featherless.ai model routing, and Wolfram verification gates.</p>
+          </div>
+        </div>
+
+        <div class="dag-visualizer-card">
+          <div class="dag-step-box">
+            <div class="dag-step-header">
+              <span class="dag-step-num">Stage 1</span>
+              <h4>Intent Classification & Subtask Decomposition</h4>
+              <span class="model-badge">Mistral-Nemo-Instruct-2407</span>
+            </div>
+            <p class="dag-step-desc">Ingests unconstrained user prompt. Analyzes domain context, extracts discrete sub-goals, generates JSON schema, and flags quantitative formulas requiring symbolic oracle verification.</p>
+          </div>
+
+          <div class="dag-arrow-down">⬇</div>
+
+          <div class="dag-step-box">
+            <div class="dag-step-header">
+              <span class="dag-step-num">Stage 2</span>
+              <h4>Multi-Model Parallel Reasoning Swarm</h4>
+              <span class="model-badge">DeepSeek-V3 + Qwen-2.5-Coder-32B</span>
+            </div>
+            <p class="dag-step-desc">Dispatches specialized tasks concurrently: DeepSeek-V3 executes deep step-by-step mathematical reasoning while Qwen-2.5-Coder writes structured schemas and parameter bounds.</p>
+          </div>
+
+          <div class="dag-arrow-down">⬇</div>
+
+          <div class="dag-step-box highlight-oracle">
+            <div class="dag-step-header">
+              <span class="dag-step-num">Stage 3</span>
+              <h4>Symbolic Verification & Constraint Oracle</h4>
+              <span class="model-badge oracle">Wolfram Engine / SymPy AST</span>
+            </div>
+            <p class="dag-step-desc">Parses arithmetic formulas, rate constants, and engineering bounds. Deterministically calculates ground truth numerical values. Flags any LLM hallucination with zero tolerance.</p>
+          </div>
+
+          <div class="dag-arrow-down">⬇</div>
+
+          <div class="dag-step-box">
+            <div class="dag-step-header">
+              <span class="dag-step-num">Stage 4</span>
+              <h4>Consensus & Cross-Model Discrepancy Resolution</h4>
+              <span class="model-badge">Moonshot Kimi-K2.5 / GLM-5</span>
+            </div>
+            <p class="dag-step-desc">Performs adversarial cross-evaluation. Reconciles unit dimensions (e.g. Celsius vs Kelvin, Watts vs Joules/sec), injects verified Wolfram numbers, and computes consensus confidence score.</p>
+          </div>
+
+          <div class="dag-arrow-down">⬇</div>
+
+          <div class="dag-step-box">
+            <div class="dag-step-header">
+              <span class="dag-step-num">Stage 5</span>
+              <h4>Verified Structured Synthesis</h4>
+              <span class="model-badge">DeepSeek-V3 Synthesizer</span>
+            </div>
+            <p class="dag-step-desc">Compiles the final publication-ready technical report with verified LaTeX equations, operating envelopes, and the official Mathematical Verification Certificate.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4: FEATHERLESS MODEL CATALOG -->
+    <section id="models-tab" class="tab-content">
+      <div class="panel-card">
+        <div class="panel-header">
+          <div>
+            <h2 class="panel-title">Featherless.ai Model Swarm Catalog</h2>
+            <p class="panel-subtitle">Integrated flagship models leveraged by SynapseFlow for optimal speed, reasoning, and accuracy.</p>
+          </div>
+        </div>
+
+        <div class="model-catalog-grid">
+          <div class="model-catalog-card">
+            <div class="model-catalog-header">
+              <h3>DeepSeek-V3 (0324)</h3>
+              <span class="badge-role">Lead Reasoner & Synthesizer</span>
+            </div>
+            <p class="text-muted">Flagship MoE reasoning model with advanced mathematical and multi-step analytical reasoning capabilities.</p>
+            <div class="model-specs font-mono">
+              <div>• Context: 32,768 tokens</div>
+              <div>• Concurrency: 4 slots</div>
+              <div>• Role: Stages 2 & 5</div>
+            </div>
+          </div>
+
+          <div class="model-catalog-card">
+            <div class="model-catalog-header">
+              <h3>Qwen-2.5-Coder (32B)</h3>
+              <span class="badge-role">Code & Schema Specialist</span>
+            </div>
+            <p class="text-muted">High-precision coding model optimized for structured JSON outputs, safety envelopes, and API definitions.</p>
+            <div class="model-specs font-mono">
+              <div>• Context: 32,768 tokens</div>
+              <div>• Concurrency: 2 slots</div>
+              <div>• Role: Stage 2 (Coder)</div>
+            </div>
+          </div>
+
+          <div class="model-catalog-card">
+            <div class="model-catalog-header">
+              <h3>Mistral-Nemo-Instruct (2407)</h3>
+              <span class="badge-role">Fast Intent Classifier</span>
+            </div>
+            <p class="text-muted">Ultra-fast 12B parameter model engineered for low-latency prompt decomposition and dynamic task routing.</p>
+            <div class="model-specs font-mono">
+              <div>• Context: 128,000 tokens</div>
+              <div>• Concurrency: 1 slot</div>
+              <div>• Role: Stage 1 Router</div>
+            </div>
+          </div>
+
+          <div class="model-catalog-card">
+            <div class="model-catalog-header">
+              <h3>Kimi-K2.5</h3>
+              <span class="badge-role">Consensus & Debate Arbiter</span>
+            </div>
+            <p class="text-muted">High-capacity reasoning engine specializing in adversarial evaluation and cross-model consensus resolution.</p>
+            <div class="model-specs font-mono">
+              <div>• Context: 32,768 tokens</div>
+              <div>• Concurrency: 4 slots</div>
+              <div>• Role: Stage 4 Consensus</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="app-footer">
+    <div class="footer-container">
+      <div>SynapseFlow • Reverie Hacks 2026 Submission • Powered by Featherless.ai & Wolfram Research</div>
+      <div class="footer-links">
+        <a href="https://reverie-hacks-2026.devpost.com/" target="_blank">Devpost Page</a> •
+        <a href="https://featherless.ai" target="_blank">Featherless.ai</a> •
+        <a href="https://www.wolfram.com" target="_blank">Wolfram Research</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

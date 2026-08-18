@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="ResilioNet AI - Autonomous Multi-Modal Disaster Resilience & Community Mutual-Aid Coordination Network. Built for HackSocial 2026.">
+  <title>ResilioNet AI &bull; Crisis Operations & Mutual-Aid Grid</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <!-- Custom Vanilla CSS -->
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="theme-dark">
+  <!-- Top Global Navigation Bar -->
+  <header class="app-header" role="banner">
+    <div class="header-left">
+      <div class="brand-badge">
+        <div class="pulsing-core"></div>
+        <span class="brand-name">ResilioNet<span class="brand-accent">.AI</span></span>
+      </div>
+      <span class="brand-sub">Autonomous Disaster Resilience & Mutual-Aid Engine</span>
+      <span class="hackathon-tag">HackSocial 2026</span>
+    </div>
+
+    <div class="header-center">
+      <div class="status-indicator active" id="networkStatusBadge">
+        <span class="status-dot"></span>
+        <span class="status-text" id="networkStatusText">GRID ONLINE &bull; 0 MS LATENCY</span>
+      </div>
+      <div class="status-indicator ledger-verified" id="ledgerStatusBadge">
+        <span class="ledger-lock-icon">&#128274;</span>
+        <span class="ledger-text" id="ledgerStatusText">HMAC-SHA256 LEDGER INTACT</span>
+      </div>
+    </div>
+
+    <div class="header-right">
+      <button class="btn btn-audio-toggle" id="ttsVoiceToggle" aria-label="Toggle Audio Broadcasts">
+        <span class="icon" id="ttsIcon">&#128266;</span>
+        <span class="label" id="ttsLabel">Voice Alerts: ON</span>
+      </button>
+      <button class="btn btn-primary" id="btnQuickSOS" onclick="switchTab('triage')">
+        <span class="icon">&#9888;</span> Report SOS
+      </button>
+    </div>
+  </header>
+
+  <!-- Live Top-Level KPI HUD -->
+  <section class="kpi-hud" aria-label="Crisis Telemetry HUD">
+    <div class="kpi-card urgency-critical">
+      <div class="kpi-icon">&#128680;</div>
+      <div class="kpi-body">
+        <div class="kpi-val" id="kpiCriticalCount">0</div>
+        <div class="kpi-lbl">Critical Life-Safety Threats (Urgency &ge; 8.5)</div>
+      </div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-icon">&#128225;</div>
+      <div class="kpi-body">
+        <div class="kpi-val" id="kpiActiveSOS">0</div>
+        <div class="kpi-lbl">Active SOS Distress Beacons</div>
+      </div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-icon">&#9989;</div>
+      <div class="kpi-body">
+        <div class="kpi-val" id="kpiFulfillmentRate">0.0%</div>
+        <div class="kpi-lbl">Aid Fulfillment Rate</div>
+      </div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-icon">&#9878;</div>
+      <div class="kpi-body">
+        <div class="kpi-val" id="kpiGiniIndex">0.000</div>
+        <div class="kpi-lbl">Resource Equity Gini Index (0.00 = Optimal)</div>
+      </div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-icon">&#128230;</div>
+      <div class="kpi-body">
+        <div class="kpi-val" id="kpiSuppliesInStock">0</div>
+        <div class="kpi-lbl">Depot Supplies In Stock</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Navigation Tabs -->
+  <nav class="main-tabs" role="navigation" aria-label="Operations Navigation">
+    <button class="tab-btn active" data-tab="map" onclick="switchTab('map')">
+      <span class="tab-icon">&#128506;</span> Geospatial Crisis Radar & Map
+    </button>
+    <button class="tab-btn" data-tab="triage" onclick="switchTab('triage')">
+      <span class="tab-icon">&#127911;</span> SOS Triage Studio (NLP & Audio)
+    </button>
+    <button class="tab-btn" data-tab="optimizer" onclick="switchTab('optimizer')">
+      <span class="tab-icon">&#9881;</span> Resource Matching & Equity Optimizer
+    </button>
+    <button class="tab-btn" data-tab="depots" onclick="switchTab('depots')">
+      <span class="tab-icon">&#127973;</span> Supply Depots & Mutual-Aid Hubs
+    </button>
+    <button class="tab-btn" data-tab="mesh" onclick="switchTab('mesh')">
+      <span class="tab-icon">&#128246;</span> Offline Mesh & Blockchain Ledger
+    </button>
+    <button class="tab-btn" data-tab="commander" onclick="switchTab('commander')">
+      <span class="tab-icon">&#129302;</span> AI Incident Commander Directives
+    </button>
+  </nav>
+
+  <!-- Main Workspace Panels Container -->
+  <main class="app-main">
+
+    <!-- PANEL 1: GEOSPATIAL CRISIS RADAR & MAP -->
+    <section class="tab-panel active" id="panel-map">
+      <div class="grid-2col-map">
+        <!-- Canvas Map Viewport -->
+        <div class="map-container-card">
+          <div class="card-header">
+            <div class="card-title">
+              <span class="card-icon">&#128506;</span> Live Geospatial Crisis Radar
+            </div>
+            <div class="map-controls">
+              <span class="badge badge-pulse">LIVE RADAR SWEEP</span>
+              <button class="btn btn-sm" onclick="resetMapView()">Center Grid</button>
+            </div>
+          </div>
+          <div class="canvas-wrapper">
+            <canvas id="disasterMapCanvas" width="900" height="540"></canvas>
+            <div class="map-legend">
+              <div class="legend-item"><span class="legend-dot dot-critical"></span> Critical SOS (&ge; 8.5)</div>
+              <div class="legend-item"><span class="legend-dot dot-high"></span> Urgent SOS (6.5-8.4)</div>
+              <div class="legend-item"><span class="legend-dot dot-moderate"></span> Moderate SOS (&lt; 6.5)</div>
+              <div class="legend-item"><span class="legend-dot dot-hub"></span> Supply Depot / Hub</div>
+              <div class="legend-item"><span class="legend-line line-dispatch"></span> Active Aid Convoy</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Selected Node Inspector & Live Feed -->
+        <div class="sidebar-card">
+          <div class="card-header">
+            <div class="card-title">
+              <span class="card-icon">&#128269;</span> Target Signal Inspector
+            </div>
+          </div>
+          <div class="inspector-body" id="inspectorContent">
+            <div class="inspector-placeholder">
+              <div class="placeholder-icon">&#128065;</div>
+              <p>Click any SOS beacon or Supply Depot on the radar to inspect live metadata, triage diagnostics, and route allocations.</p>
+            </div>
+          </div>
+
+          <div class="card-header border-top mt-3">
+            <div class="card-title">
+              <span class="card-icon">&#9889;</span> Live Distress Beacon Stream
+            </div>
+            <span class="badge" id="streamCountBadge">0 Signals</span>
+          </div>
+          <div class="live-stream-list" id="mapLiveStreamList">
+            <!-- Dynamic stream items -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PANEL 2: SOS TRIAGE STUDIO (NLP & AUDIO) -->
+    <section class="tab-panel" id="panel-triage">
+      <div class="grid-2col">
+        <!-- Input Form & Audio Simulator -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <span class="card-icon">&#127908;</span> Citizen Distress Ingestion & Multi-Modal Parser
+            </div>
+          </div>
+          <div class="card-body">
+            <p class="text-secondary text-sm mb-3">
+              Accepts multilingual emergency transcripts, 911/SMS text feeds, and voice audio. Zero-shot NLP extracts urgency, headcount, medical needs, and GPS.
+            </p>
+
+            <div class="preset-triggers mb-3">
+              <div class="preset-label">Quick Crisis Scenarios:</div>
+              <div class="preset-chips">
+                <button class="chip" onclick="loadPresetSOS(0)">🌊 Flood Trapped (Roof)</button>
+                <button class="chip" onclick="loadPresetSOS(1)">⚡ Senior Oxygen Outage</button>
+                <button class="chip" onclick="loadPresetSOS(2)">🏗️ Structural Collapse Trauma</button>
+                <button class="chip" onclick="loadPresetSOS(3)">🍼 Westside Infant Dehydration</button>
+                <button class="chip" onclick="loadPresetSOS(4)">❄️ Sub-Zero Hypothermia</button>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="sosInputText" class="form-label">SOS Distress Message / Voice Transcript:</label>
+              <textarea id="sosInputText" class="form-textarea" rows="4" placeholder="Type or paste emergency distress message in any language..."></textarea>
+            </div>
+
+            <div class="form-row-2">
+              <div class="form-group">
+                <label for="sosSenderName" class="form-label">Requester Name / Entity:</label>
+                <input type="text" id="sosSenderName" class="form-input" placeholder="e.g. Maria Sanchez / Unit 402">
+              </div>
+              <div class="form-group">
+                <label for="sosZoneSelect" class="form-label">Geographic Zone:</label>
+                <select id="sosZoneSelect" class="form-select">
+                  <option value="ZONE-COASTAL-4">ZONE-COASTAL-4 (Marina Coast)</option>
+                  <option value="ZONE-HIGHLAND-2">ZONE-HIGHLAND-2 (Highland Ridge)</option>
+                  <option value="ZONE-WESTSIDE-3">ZONE-WESTSIDE-3 (Westside District)</option>
+                  <option value="ZONE-DOWNTOWN-1">ZONE-DOWNTOWN-1 (Downtown Plaza)</option>
+                  <option value="ZONE-MOUNTAIN-6">ZONE-MOUNTAIN-6 (Mount Tamalpais)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="btn-group-actions mt-3">
+              <button class="btn btn-primary btn-lg" id="btnSubmitSOS" onclick="submitLiveSOS()">
+                <span class="icon">&#128680;</span> Broadcast SOS to Network
+              </button>
+              <button class="btn btn-secondary" onclick="simulateVoiceMicRecording()">
+                <span class="icon">&#127908;</span> Simulate Audio Mic Feed
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Real-Time NLP Parsing Breakdown Card -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <span class="card-icon">&#129504;</span> Zero-Shot NLP Triage & Urgency Breakdown
+            </div>
+            <span class="badge badge-accent" id="previewConfidenceBadge">CONFIDENCE 0.00</span>
+          </div>
+          <div class="card-body" id="triagePreviewBody">
+            <div class="urgency-meter-container mb-3">
+              <div class="urgency-label-row">
+                <span class="meter-title">CALCULATED URGENCY SCORE:</span>
+                <span class="meter-score" id="previewUrgencyScore">0.0 / 10.0</span>
+              </div>
+              <div class="meter-bar-track">
+                <div class="meter-bar-fill" id="previewUrgencyBar" style="width: 0%;"></div>
+              </div>
+            </div>
+
+            <div class="category-banner mb-3" id="previewCategoryBanner">
+              <span class="cat-pill" id="previewPrimaryCat">AWAITING INPUT</span>
+            </div>
+
+            <div class="entities-grid mb-3">
+              <div class="entity-box">
+                <div class="entity-lbl">Headcount</div>
+                <div class="entity-val" id="previewHeadcount">0</div>
+              </div>
+              <div class="entity-box">
+                <div class="entity-lbl">Infants</div>
+                <div class="entity-val" id="previewInfants">0</div>
+              </div>
+              <div class="entity-box">
+                <div class="entity-lbl">Elderly</div>
+                <div class="entity-val" id="previewElderly">0</div>
+              </div>
+              <div class="entity-box">
+                <div class="entity-lbl">Stress Score</div>
+                <div class="entity-val" id="previewStressScore">0.00</div>
+              </div>
+            </div>
+
+            <div class="diagnostics-section">
+              <div class="diag-item">
+                <strong>Medical Conditions Extracted:</strong>
+                <span id="previewMedicalList" class="text-secondary">None</span>
+              </div>
+              <div class="diag-item">
+                <strong>Specific Supplies Identified:</strong>
+                <span id="previewSuppliesList" class="text-secondary">None</span>
+              </div>
+              <div class="diag-item">
+                <strong>Recommended Kit Standard:</strong>
+                <span id="previewKitType" class="badge">KIT-STANDARD</span>
+              </div>
+              <div class="diag-item">
+                <strong>Actionable Summary:</strong>
+                <p id="previewActionableSummary" class="text-sm text-secondary">Start typing an SOS distress message to see real-time NLP parsing.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PANEL 3: RESOURCE MATCHING & EQUITY OPTIMIZER -->
+    <section class="tab-panel" id="panel-optimizer">
+      <div class="grid-2col">
+        <!-- Optimization Parameters & Controls -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <span class="card-icon">&#9881;</span> Multi-Objective Bipartite Solver Controls
+            </div>
+            <button class="btn btn-sm btn-primary" onclick="reoptimizeAllocations()">
+              <span class="icon">&#9654;</span> Run Solver Cycle
+            </button>
+          </div>
+          <div class="card-body">
+            <div class="form-group mb-4">
+              <div class="slider-header">
+                <label for="fairnessWeightSlider" class="form-label">Fairness & Equity Weight (&lambda;):</label>
+                <span class="slider-val" id="valFairnessWeight">0.35</span>
+              </div>
+              <input type="range" id="fairnessWeightSlider" class="form-slider" min="0.0" max="1.0" step="0.05" value="0.35" oninput="updateOptimizerSliders()">
+              <p class="slider-desc">Higher values penalize geographic inequality (Gini index) to prevent peripheral aid starvation.</p>
+            </div>
+
+            <div class="form-group mb-4">
+              <div class="slider-header">
+                <label for="distancePenaltySlider" class="form-label">Distance & Transit Decay Penalty (&alpha;):</label>
+                <span class="slider-val" id="valDistancePenalty">0.05</span>
+              </div>
+              <input type="range" id="distancePenaltySlider" class="form-slider" min="0.0" max="0.20" step="0.01" value="0.05" oninput="updateOptimizerSliders()">
+              <p class="slider-desc">Penalizes transit time across long Haversine distances to favor nearest-depot dispatch.</p>
+            </div>
+
+            <div class="solver-stats-box">
+              <div class="stat-row">
+                <span>Total Demands:</span> <strong id="optTotalDemands">0</strong>
+              </div>
+              <div class="stat-row">
+                <span>Matched &amp; Assigned:</span> <strong class="text-success" id="optMatchedDemands">0</strong>
+              </div>
+              <div class="stat-row">
+                <span>Unserviced Requests:</span> <strong class="text-danger" id="optUnservicedDemands">0</strong>
+              </div>
+              <div class="stat-row">
+                <span>Fulfillment Rate:</span> <strong id="optFulfillmentRate">0.0%</strong>
+              </div>
+              <div class="stat-row">
+                <span>Gini Equity Score:</span> <strong class="text-accent" id="optGiniScore">0.000</strong>
+              </div>
+            </div>
+
+            <div class="mt-3" id="criticalBottlenecksContainer">
+              <div class="section-subtitle">Identified Supply Bottlenecks:</div>
+              <ul class="bottleneck-list" id="bottleneckList">
+                <!-- Injected via JS -->
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Matched Convoys & Dispatch Tracker -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <span class="card-icon">&#128666;</span> Active Aid Allocation Convoys
+            </div>
+            <span class="badge" id="matchCountBadge">0 Convoys</span>
+          </div>
+          <div class="matches-scroll-container" id="matchedConvoysList">
+            <!-- Dynamic Match Cards -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PANEL 4: SUPPLY DEPOTS & MUTUAL-AID HUBS -->
+    <section class="tab-panel" id="panel-depots">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <span class="card-icon">&#127973;</span> Mutual-Aid Hubs & Emergency Inventory
+          </div>
+          <button class="btn btn-sm btn-secondary" onclick="openNewDepotModal()">
+            <span class="icon">&#43;</span> Register New Depot
+          </button>
+        </div>
+        <div class="card-body">
+          <div class="depots-grid" id="depotsGridContainer">
+            <!-- Dynamic Depot Cards -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PANEL 5: OFFLINE MESH & BLOCKCHAIN LEDGER -->
+    <section class="tab-panel" id="panel-mesh">
+      <div class="grid-2col">
+        <!-- Mesh Packet Radio Grid Simulator -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <span class="card-icon">&#128246;</span> Offline Mesh Radio Packet Log
+            </div>
+            <button class="btn btn-sm btn-primary" onclick="simulateMeshBroadcast()">
+              <span class="icon">&#128225;</span> Broadcast Mesh Ping
+            </button>
+          </div>
+          <div class="card-body">
+            <p class="text-secondary text-sm mb-3">
+              Simulates zero-connectivity peer-to-peer radio synchronization (LoRa / Bluetooth / Local WiFi Mesh). Packets are signed with HMAC-SHA256.
+            </p>
+            <div class="mesh-packets-list" id="meshPacketsList">
+              <!-- Dynamic Mesh Packets -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Immutable Audit Ledger Explorer -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <span class="card-icon">&#128274;</span> Tamper-Evident Disaster Audit Ledger
+            </div>
+            <button class="btn btn-sm btn-success" onclick="verifyLedgerIntegrity()">
+              <span class="icon">&#10004;</span> Verify Cryptographic Chain
+            </button>
+          </div>
+          <div class="card-body">
+            <p class="text-secondary text-sm mb-3">
+              Every SOS, allocation, and inventory transaction is cryptographically hashed with SHA-256 to guarantee 100% transparency for NGOs and donors.
+            </p>
+            <div class="ledger-chain-container" id="ledgerChainContainer">
+              <!-- Dynamic Blocks -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PANEL 6: AI INCIDENT COMMANDER DIRECTIVES -->
+    <section class="tab-panel" id="panel-commander">
+      <div class="grid-2col">
+        <!-- Actionable Directives & Hazards -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <span class="card-icon">&#128227;</span> Autonomous Operational Directives
+            </div>
+            <span class="badge badge-danger" id="commanderStatusBadge">STATUS: ACTIVE</span>
+          </div>
+          <div class="card-body" id="commanderDirectivesContainer">
+            <!-- Dynamic Directives -->
+          </div>
+        </div>
+
+        <!-- Hyperlocal Vulnerability Indexes (HRVI) -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <span class="card-icon">&#127960;</span> Hyperlocal Resilience Vulnerability Index (HRVI)
+            </div>
+          </div>
+          <div class="card-body">
+            <p class="text-secondary text-sm mb-3">
+              Composite vulnerability scoring combining demographics, infrastructure fragility, and real-time flood/fire hazards.
+            </p>
+            <div class="zones-table-wrapper" id="zonesTableWrapper">
+              <!-- Dynamic Zone Cards -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Notification Toast Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Custom Scripts -->
+  <script src="/static/app.js"></script>
+</body>
+</html>

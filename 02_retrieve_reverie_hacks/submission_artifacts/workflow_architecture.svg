@@ -1,0 +1,104 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 900" width="100%" height="100%" style="background:#0f172a; font-family:'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;">
+  <defs>
+    <linearGradient id="blueGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2563eb"/>
+      <stop offset="100%" stop-color="#1d4ed8"/>
+    </linearGradient>
+    <linearGradient id="emeraldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#059669"/>
+      <stop offset="100%" stop-color="#047857"/>
+    </linearGradient>
+    <linearGradient id="amberGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#d97706"/>
+      <stop offset="100%" stop-color="#b45309"/>
+    </linearGradient>
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="115%" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000000" flood-opacity="0.4"/>
+    </filter>
+  </defs>
+
+  <!-- Title & Banner -->
+  <text x="500" y="45" text-anchor="middle" fill="#f8fafc" font-size="24" font-weight="800" letter-spacing="-0.5">SYNAPSEFLOW: ML PROMPT WORKFLOW ARCHITECTURE</text>
+  <text x="500" y="70" text-anchor="middle" fill="#94a3b8" font-size="13" font-weight="500">Reverie Hacks 2026 • Multi-LLM Orchestrator (Featherless.ai) + Wolfram Symbolic Oracle</text>
+
+  <!-- Node 0: User Input -->
+  <g transform="translate(250, 100)" filter="url(#shadow)">
+    <rect width="500" height="70" rx="10" fill="#1e293b" stroke="#334155" stroke-width="1.5"/>
+    <circle cx="35" cy="35" r="16" fill="#3b82f6"/>
+    <text x="35" y="40" text-anchor="middle" fill="#ffffff" font-size="14" font-weight="bold">👤</text>
+    <text x="70" y="30" fill="#f8fafc" font-size="14" font-weight="700">HUMAN INPUT: Complex Scientific / Analytical Prompt</text>
+    <text x="70" y="50" fill="#94a3b8" font-size="11">Multi-domain parameters, differential equations, safety envelopes, or clinical data</text>
+  </g>
+
+  <!-- Down Arrow 1 -->
+  <path d="M 500 170 L 500 205" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)" stroke-dasharray="4"/>
+
+  <!-- Stage 1 Node -->
+  <g transform="translate(150, 210)" filter="url(#shadow)">
+    <rect width="700" height="85" rx="10" fill="#1e293b" stroke="#2563eb" stroke-width="2"/>
+    <rect x="0" y="0" width="8" height="85" fill="#2563eb" rx="4"/>
+    <text x="30" y="32" fill="#38bdf8" font-size="11" font-weight="800" letter-spacing="1">STAGE 1: INTENT &amp; SUBTASK DECOMPOSITION</text>
+    <text x="30" y="55" fill="#f8fafc" font-size="14" font-weight="700">Model: Mistral-Nemo-Instruct-2407 (Featherless.ai)</text>
+    <text x="30" y="72" fill="#cbd5e1" font-size="12">Decomposes prompt into 2-4 subtasks, assigns model roles, extracts equations to verify.</text>
+    <rect x="530" y="25" width="140" height="35" rx="6" fill="#0f172a" stroke="#334155"/>
+    <text x="600" y="47" text-anchor="middle" fill="#38bdf8" font-size="11" font-family="monospace">JSON Schema DAG</text>
+  </g>
+
+  <!-- Down Arrow 2 -->
+  <path d="M 500 295 L 500 330" stroke="#64748b" stroke-width="2" stroke-dasharray="4"/>
+
+  <!-- Stage 2 Node (Parallel Swarm) -->
+  <g transform="translate(150, 335)" filter="url(#shadow)">
+    <rect width="700" height="110" rx="10" fill="#1e293b" stroke="#3b82f6" stroke-width="1.5"/>
+    <text x="30" y="28" fill="#38bdf8" font-size="11" font-weight="800" letter-spacing="1">STAGE 2: MULTI-MODEL PARALLEL REASONING SWARM</text>
+    
+    <!-- Worker A -->
+    <rect x="30" y="40" width="310" height="55" rx="6" fill="#0f172a" stroke="#1e3a8a"/>
+    <text x="45" y="60" fill="#60a5fa" font-size="12" font-weight="700">DeepSeek-V3-0324 (Featherless)</text>
+    <text x="45" y="78" fill="#94a3b8" font-size="10">Deep analytical reasoning &amp; kinetic formulas</text>
+    
+    <!-- Worker B -->
+    <rect x="360" y="40" width="310" height="55" rx="6" fill="#0f172a" stroke="#1e3a8a"/>
+    <text x="375" y="60" fill="#60a5fa" font-size="12" font-weight="700">Qwen-2.5-Coder-32B (Featherless)</text>
+    <text x="375" y="78" fill="#94a3b8" font-size="10">Safety envelope &amp; JSON schema specs</text>
+  </g>
+
+  <!-- Down Arrow 3 -->
+  <path d="M 500 445 L 500 480" stroke="#64748b" stroke-width="2" stroke-dasharray="4"/>
+
+  <!-- Stage 3 Node (Wolfram Oracle) -->
+  <g transform="translate(150, 485)" filter="url(#shadow)">
+    <rect width="700" height="95" rx="10" fill="#1e293b" stroke="#059669" stroke-width="2.5"/>
+    <rect x="0" y="0" width="8" height="95" fill="#059669" rx="4"/>
+    <text x="30" y="32" fill="#34d399" font-size="11" font-weight="800" letter-spacing="1">STAGE 3: SYMBOLIC VERIFICATION &amp; CONSTRAINT ORACLE</text>
+    <text x="30" y="55" fill="#f8fafc" font-size="14" font-weight="700">Engine: Wolfram Alpha API + Deterministic SymPy Engine</text>
+    <text x="30" y="75" fill="#cbd5e1" font-size="12">Extracts mathematical claims, solves symbolic ground truth, detects &amp; rejects hallucinations.</text>
+    <rect x="520" y="25" width="150" height="45" rx="6" fill="#064e3b" stroke="#059669"/>
+    <text x="595" y="47" text-anchor="middle" fill="#6ee7b7" font-size="11" font-weight="700">0% Hallucination Gate</text>
+    <text x="595" y="62" text-anchor="middle" fill="#a7f3d0" font-size="9">Verified Numerical Ground Truth</text>
+  </g>
+
+  <!-- Down Arrow 4 -->
+  <path d="M 500 580 L 500 615" stroke="#64748b" stroke-width="2" stroke-dasharray="4"/>
+
+  <!-- Stage 4 Node (Consensus) -->
+  <g transform="translate(150, 620)" filter="url(#shadow)">
+    <rect width="700" height="85" rx="10" fill="#1e293b" stroke="#d97706" stroke-width="1.5"/>
+    <text x="30" y="30" fill="#fbbf24" font-size="11" font-weight="800" letter-spacing="1">STAGE 4: CONSENSUS &amp; CROSS-MODEL RESOLUTION</text>
+    <text x="30" y="52" fill="#f8fafc" font-size="14" font-weight="700">Model: Moonshot Kimi-K2.5 / GLM-5 (Featherless.ai)</text>
+    <text x="30" y="70" fill="#cbd5e1" font-size="12">Reconciles temperature/unit scales, resolves discrepancies, injects verified oracle values.</text>
+  </g>
+
+  <!-- Down Arrow 5 -->
+  <path d="M 500 705 L 500 740" stroke="#64748b" stroke-width="2" stroke-dasharray="4"/>
+
+  <!-- Stage 5 Node (Final Synthesis) -->
+  <g transform="translate(150, 745)" filter="url(#shadow)">
+    <rect width="700" height="90" rx="10" fill="#0f172a" stroke="#3b82f6" stroke-width="2"/>
+    <text x="30" y="30" fill="#60a5fa" font-size="11" font-weight="800" letter-spacing="1">STAGE 5: VERIFIED STRUCTURED SYNTHESIS</text>
+    <text x="30" y="52" fill="#f8fafc" font-size="14" font-weight="700">Model: DeepSeek-V3-0324 Synthesizer</text>
+    <text x="30" y="72" fill="#cbd5e1" font-size="12">Generates publication-ready report, verified LaTeX equations, and Mathematical Certificate.</text>
+    <rect x="520" y="25" width="150" height="40" rx="6" fill="#1e3a8a" stroke="#3b82f6"/>
+    <text x="595" y="49" text-anchor="middle" fill="#93c5fd" font-size="11" font-weight="700">Audit Certificate</text>
+  </g>
+</svg>
