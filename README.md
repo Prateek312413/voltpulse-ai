@@ -99,6 +99,7 @@ pytest tests/ -v
 ```
 ├── 01_cockroachdb_aws_hackathon/   <-- AegisMed: Standalone Packaging & Assets
 ├── 02_retrieve_reverie_hacks/      <-- SynapseFlow: Reverie Hacks 2026 Submission
+├── 04_volthacks_2026/              <-- VoltPulse AI: VoltHacks 2026 1st Place Submission
 ├── 07_neuralsprint_2026/           <-- NeuroAccess AI: NeuralSprint Submission
 ├── 08_hacksocial_2026/             <-- ResilioNet AI: HackSocial Submission
 ├── aegismed/                       <-- Core AegisMed Application Package

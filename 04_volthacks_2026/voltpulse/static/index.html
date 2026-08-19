@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VoltPulse AI — Edge-AI BMS & Grid Battery Resilience Platform</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700;800&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="theme-dark">
+  <!-- Top SCADA Navbar -->
+  <header class="scada-header">
+    <div class="header-left">
+      <div class="brand-badge">
+        <span class="pulse-icon">⚡</span>
+        <div class="brand-titles">
+          <h1>VOLTPULSE AI</h1>
+          <span class="subbrand">EDGE BMS &amp; GRID THERMAL-ELECTROCHEMICAL SCADA</span>
+        </div>
+      </div>
+      <div class="bms-status-chip" id="bms-status-chip">
+        <span class="status-dot green"></span>
+        <span class="status-text">CAN-BUS J1939 ACTIVE (10 Hz)</span>
+      </div>
+      <div class="pack-badge">
+        <span class="pack-label">PACK ID:</span>
+        <span class="pack-val" id="disp-pack-id">BESS-GRID-PACK-01 (16S NMC-811)</span>
+      </div>
+    </div>
+
+    <div class="header-right">
+      <button class="btn btn-tour" id="btn-judge-tour" title="Run automated 1-Click Judge Tour demonstration">
+        <span class="btn-icon">✨</span> 1-Click Judge Tour
+      </button>
+      <button class="btn btn-voice" id="btn-toggle-voice" title="Toggle audio announcements">
+        <span class="btn-icon" id="voice-icon">🔊</span> Voice Alerts: ON
+      </button>
+      <div class="contactor-switch-box">
+        <span class="contactor-label">HV CONTACTOR:</span>
+        <button class="contactor-btn closed" id="btn-contactor-toggle">
+          <span class="contactor-state-text" id="disp-contactor-state">CLOSED</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Emergency Banner (Hidden by default) -->
+  <div class="emergency-banner hidden" id="emergency-banner">
+    <div class="banner-content">
+      <span class="alert-pulse-icon">🚨</span>
+      <div class="banner-text">
+        <strong id="emergency-title">CRITICAL THERMAL RUNAWAY INITIATION</strong>
+        <p id="emergency-desc">Rapid thermal gradient detected on Cell 7. Emergency contactor interlock tripped!</p>
+      </div>
+      <button class="btn btn-danger-sm" id="btn-emergency-reset">RESET SAFETY INTERLOCK</button>
+    </div>
+  </div>
+
+  <!-- Main Container -->
+  <main class="dashboard-grid">
+    <!-- Row 1: KPI Telemetry Cards -->
+    <section class="kpi-row">
+      <div class="kpi-card voltage-card">
+        <div class="kpi-head">
+          <span class="kpi-title">PACK VOLTAGE &amp; CURRENT</span>
+          <span class="kpi-badge">16S STRING</span>
+        </div>
+        <div class="kpi-main-val">
+          <span class="val-num" id="kpi-pack-voltage">59.20</span><span class="val-unit">V</span>
+        </div>
+        <div class="kpi-sub">
+          <span>Current: <strong id="kpi-pack-current">+25.0 A</strong></span>
+          <span>Power: <strong id="kpi-pack-power">1.48 kW</strong></span>
+        </div>
+      </div>
+
+      <div class="kpi-card soc-card">
+        <div class="kpi-head">
+          <span class="kpi-title">STATE OF CHARGE (SoC)</span>
+          <span class="kpi-badge" id="kpi-soc-mode">DISCHARGING</span>
+        </div>
+        <div class="kpi-main-val">
+          <span class="val-num" id="kpi-pack-soc">88.5</span><span class="val-unit">%</span>
+        </div>
+        <div class="soc-progress-bar">
+          <div class="soc-fill" id="kpi-soc-fill" style="width: 88.5%;"></div>
+        </div>
+      </div>
+
+      <div class="kpi-card soh-card">
+        <div class="kpi-head">
+          <span class="kpi-title">STATE OF HEALTH (SoH)</span>
+          <span class="kpi-badge">GPR &plusmn;1.96&sigma;</span>
+        </div>
+        <div class="kpi-main-val">
+          <span class="val-num" id="kpi-pack-soh">94.20</span><span class="val-unit">%</span>
+        </div>
+        <div class="kpi-sub">
+          <span>Degradation: <strong id="kpi-capacity-loss">5.80%</strong></span>
+          <span>Kernel: <strong id="kpi-selected-kernel">MATERN 5/2</strong></span>
+        </div>
+      </div>
+
+      <div class="kpi-card rul-card">
+        <div class="kpi-head">
+          <span class="kpi-title">REMAINING USEFUL LIFE</span>
+          <span class="kpi-badge">EOL: 80% SOH</span>
+        </div>
+        <div class="kpi-main-val">
+          <span class="val-num" id="kpi-rul-cycles">315</span><span class="val-unit">CYCLES</span>
+        </div>
+        <div class="kpi-sub">
+          <span>Active Obs: <strong id="kpi-obs-count">30</strong></span>
+          <span>Version: <strong id="kpi-telemetry-ver">v1</strong></span>
+        </div>
+      </div>
+
+      <div class="kpi-card temp-card">
+        <div class="kpi-head">
+          <span class="kpi-title">MAX TEMPERATURE &amp; &Delta;V</span>
+          <span class="kpi-badge" id="kpi-risk-badge">NOMINAL</span>
+        </div>
+        <div class="kpi-main-val">
+          <span class="val-num" id="kpi-max-temp">28.5</span><span class="val-unit">&deg;C</span>
+        </div>
+        <div class="kpi-sub">
+          <span>Spread &Delta;V: <strong id="kpi-delta-v">8.2 mV</strong></span>
+          <span>Balancing: <strong id="kpi-balancing-status">IDLE</strong></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Row 2: Visual Digital Twin & Forecast Envelopes -->
+    <section class="main-panels-row">
+      <!-- Panel 1: 16-Cell Thermal & Voltage Digital Twin Matrix -->
+      <div class="scada-panel panel-cell-matrix">
+        <div class="panel-header">
+          <div class="panel-title-group">
+            <span class="panel-icon">🔋</span>
+            <h2>16-CELL SERIES PACK DIGITAL TWIN</h2>
+          </div>
+          <div class="panel-controls">
+            <span class="legend-dot green"></span><span class="legend-lbl">Normal</span>
+            <span class="legend-dot yellow"></span><span class="legend-lbl">Warm</span>
+            <span class="legend-dot red"></span><span class="legend-lbl">Runaway</span>
+            <span class="legend-dot blue"></span><span class="legend-lbl">Balancing</span>
+          </div>
+        </div>
+        <div class="cell-matrix-grid" id="cell-matrix-grid">
+          <!-- 16 Cells dynamically populated via JS -->
+        </div>
+      </div>
+
+      <!-- Panel 2: Gaussian Process Regression Bayesian Forecast Chart -->
+      <div class="scada-panel panel-forecast">
+        <div class="panel-header">
+          <div class="panel-title-group">
+            <span class="panel-icon">📈</span>
+            <h2>BAYESIAN GPR SOH &amp; RUL DEGRADATION FORECAST</h2>
+          </div>
+          <div class="panel-controls">
+            <select id="select-kernel-override" class="scada-select">
+              <option value="AUTO">Auto-Select (Best RMSE)</option>
+              <option value="MATERN_52">Matérn 5/2 Kernel</option>
+              <option value="MATERN_32">Matérn 3/2 Kernel</option>
+              <option value="RBF">RBF (Squared Exp)</option>
+              <option value="RATIONAL_QUADRATIC">Rational Quadratic</option>
+              <option value="ARD_COMPOSITE">ARD Composite</option>
+            </select>
+          </div>
+        </div>
+        <div class="canvas-container">
+          <canvas id="forecastCanvas" width="700" height="260"></canvas>
+        </div>
+        <div class="forecast-meta-row">
+          <span>Val RMSE: <strong id="disp-val-rmse">0.142 %</strong></span>
+          <span>Val MAE: <strong id="disp-val-mae">0.118 %</strong></span>
+          <span>95% Interval Coverage: <strong id="disp-val-coverage">96.7 %</strong></span>
+          <span>Cholesky Jitter: <strong id="disp-val-jitter">0.0</strong></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Row 3: EIS Nyquist Spectrum, Fault Injections, CAN Stream, and Reconciliation -->
+    <section class="bottom-panels-row">
+      <!-- Panel 3: Nyquist EIS Plot -->
+      <div class="scada-panel panel-nyquist">
+        <div class="panel-header">
+          <div class="panel-title-group">
+            <span class="panel-icon">🔬</span>
+            <h2>ELECTROCHEMICAL IMPEDANCE (EIS NYQUIST)</h2>
+          </div>
+          <span class="sub-indicator">10 kHz &rarr; 10 mHz</span>
+        </div>
+        <div class="canvas-container">
+          <canvas id="nyquistCanvas" width="380" height="220"></canvas>
+        </div>
+        <div class="nyquist-legend">
+          <span>&bull; Ohmic R<sub>s</sub>: <strong id="disp-eis-rs">0.91 m&Omega;</strong></span>
+          <span>&bull; Charge Transfer R<sub>ct</sub>: <strong id="disp-eis-rct">1.54 m&Omega;</strong></span>
+        </div>
+      </div>
+
+      <!-- Panel 4: Hardware Fault Injection & Actuation Console -->
+      <div class="scada-panel panel-actuation">
+        <div class="panel-header">
+          <div class="panel-title-group">
+            <span class="panel-icon">⚙️</span>
+            <h2>HARDWARE ACTUATION &amp; FAULT INJECTION</h2>
+          </div>
+          <span class="sub-indicator">Edge Simulator</span>
+        </div>
+        <div class="actuation-grid">
+          <button class="btn btn-action fault-btn" id="btn-inject-runaway">
+            <span class="act-icon">🔥</span>
+            <div class="act-text">
+              <strong>Thermal Runaway</strong>
+              <small>Cell 7 (+4.5&deg;C/s micro-short)</small>
+            </div>
+          </button>
+
+          <button class="btn btn-action fault-btn" id="btn-inject-imbalance">
+            <span class="act-icon">⚖️</span>
+            <div class="act-text">
+              <strong>Cell Imbalance</strong>
+              <small>Cell 4 (-25% SoC drop)</small>
+            </div>
+          </button>
+
+          <button class="btn btn-action recon-btn" id="btn-inject-late-telemetry">
+            <span class="act-icon">📡</span>
+            <div class="act-text">
+              <strong>Late IoT Telemetry</strong>
+              <small>Inject cycle 140 (14d delayed)</small>
+            </div>
+          </button>
+
+          <button class="btn btn-action balance-btn" id="btn-trigger-balancing">
+            <span class="act-icon">🔋</span>
+            <div class="act-text">
+              <strong>Auto Balance</strong>
+              <small>Bleed high voltage cells</small>
+            </div>
+          </button>
+
+          <button class="btn btn-action current-btn" id="btn-charge-pack">
+            <span class="act-icon">⚡</span>
+            <div class="act-text">
+              <strong>Set Fast Charge</strong>
+              <small>-30.0 A charge current</small>
+            </div>
+          </button>
+
+          <button class="btn btn-action reset-btn" id="btn-clear-all-faults">
+            <span class="act-icon">🧹</span>
+            <div class="act-text">
+              <strong>Clear All Faults</strong>
+              <small>Normalize temperatures</small>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      <!-- Panel 5: Real-time J1939 CAN-bus & Modbus Stream -->
+      <div class="scada-panel panel-can-stream">
+        <div class="panel-header">
+          <div class="panel-title-group">
+            <span class="panel-icon">💻</span>
+            <h2>CAN-BUS J1939 TELEMETRY FRAMES</h2>
+          </div>
+          <span class="hex-badge">29-bit CAN ID</span>
+        </div>
+        <div class="can-terminal" id="can-terminal">
+          <!-- Live CAN lines populated via JS -->
+        </div>
+      </div>
+
+      <!-- Panel 6: Late-Telemetry Reconciliation Ledger -->
+      <div class="scada-panel panel-reconciliation">
+        <div class="panel-header">
+          <div class="panel-title-group">
+            <span class="panel-icon">🔄</span>
+            <h2>LATE TELEMETRY RECONCILIATION AUDIT</h2>
+          </div>
+          <span class="version-badge" id="disp-reconciliation-badge">0 Events</span>
+        </div>
+        <div class="reconciliation-content" id="reconciliation-content">
+          <div class="empty-recon-state">
+            <p>No out-of-order telemetry events detected.</p>
+            <small>Click <strong>"Late IoT Telemetry"</strong> to simulate asynchronous delayed packets and observe deterministic timeline reconstruction.</small>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
