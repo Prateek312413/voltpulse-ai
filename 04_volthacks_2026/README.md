@@ -52,16 +52,32 @@ Battery Energy Storage Systems (BESS) and Electric Vehicle (EV) battery packs ar
 ## 2. Mathematical & Algorithmic Foundations
 
 ### A. Physics-Informed Gaussian Process Regression (GPR)
+
 VoltPulse models battery State-of-Health (SOH) degradation using a linear degradation drift prior combined with a non-linear Gaussian Process kernel:
-$$\hat{y}(x_*) = m(x_*) + \mathbf{k}_*^T \left( \mathbf{K} + \sigma_n^2 \mathbf{I} \right)^{-1} (\mathbf{y} - m(\mathbf{X}))$$
-$$\mathbb{V}[y(x_*)] = k(x_*, x_*) - \mathbf{k}_*^T \left( \mathbf{K} + \sigma_n^2 \mathbf{I} \right)^{-1} \mathbf{k}_*$$
-$$\text{CI}_{95\%} = \hat{y}(x_*) \pm 1.96 \cdot \sqrt{\mathbb{V}[y(x_*)]}$$
+
+$$
+\hat{y}(x_*) = m(x_*) + \mathbf{k}_*^T \left( \mathbf{K} + \sigma_n^2 \mathbf{I} \right)^{-1} (\mathbf{y} - m(\mathbf{X}))
+$$
+
+$$
+\mathbb{V}[y(x_*)] = k(x_*, x_*) - \mathbf{k}_*^T \left( \mathbf{K} + \sigma_n^2 \mathbf{I} \right)^{-1} \mathbf{k}_*
+$$
+
+$$
+\text{CI}_{95\%} = \hat{y}(x_*) \pm 1.96 \cdot \sqrt{\mathbb{V}[y(x_*)]}
+$$
 
 ### B. Electrochemical Impedance Spectroscopy (EIS) Nyquist Model
-$$Z(\omega) = R_s + \frac{R_{ct}}{1 + (j\omega R_{ct} C_{dl})^\alpha} + \frac{\sigma_w}{\sqrt{\omega}}(1 - j)$$
+
+$$
+Z(\omega) = R_s + \frac{R_{ct}}{1 + (j\omega R_{ct} C_{dl})^\alpha} + \frac{\sigma_w}{\sqrt{\omega}}(1 - j)
+$$
 
 ### C. Early Micro-Short Anomaly Formulation
-$$\chi = \left| \frac{dT_{cell}}{dt} \right| \cdot \left( 1 + 10 \left| \frac{dV_{cell}}{dt} \right| \right) + \frac{\Delta T_{divergence}}{4} > \gamma_{critical}$$
+
+$$
+\chi = \left| \frac{dT_{cell}}{dt} \right| \cdot \left( 1 + 10 \left| \frac{dV_{cell}}{dt} \right| \right) + \frac{\Delta T_{divergence}}{4} > \gamma_{critical}
+$$
 
 ---
 
