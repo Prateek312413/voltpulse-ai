@@ -4,6 +4,7 @@
 > **Themes:** Robotics & Embedded Systems &bull; AI + Hardware Integration &bull; Sustainability & Smart Cities &bull; Open Innovation  
 > **Target Award:** Grand Prize ($35,785+ Prize Pool) &bull; Best Hardware / Embedded AI Application  
 
+[![GitHub Repository](https://img.shields.io/badge/GitHub-voltpulse--ai-181717?style=for-the-badge&logo=github)](https://github.com/Prateek312413/voltpulse-ai)
 [![Tests](https://img.shields.io/badge/pytest-22%20passed%20(100%25)-success?style=for-the-badge)](tests/)
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-brightgreen?style=for-the-badge&logo=python)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.110%2B-009688?style=for-the-badge&logo=fastapi)](https://fastapi.tiangolo.com)

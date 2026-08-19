@@ -3,7 +3,7 @@
 > **Official 1st Prize Submission for VoltHacks 2026 Hackathon (Devpost)**  
 > **Themes:** Robotics & Embedded Systems &bull; AI + Hardware Integration &bull; Sustainability & Smart Cities &bull; Open Innovation  
 > **Target Award:** Grand Prize ($35,785+ Prize Pool) &bull; Best Hardware / Embedded AI Application  
-> **GitHub Repository:** [https://github.com/Prateek312413/battery-health-forecast-engine](https://github.com/Prateek312413/battery-health-forecast-engine) *(or dedicated folder `04_volthacks_2026`)*  
+> **GitHub Repository:** [https://github.com/Prateek312413/voltpulse-ai](https://github.com/Prateek312413/voltpulse-ai)  
 
 ---
 
