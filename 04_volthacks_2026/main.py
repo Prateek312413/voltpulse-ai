@@ -55,6 +55,22 @@ async def root():
     return {"message": "VoltPulse AI API Gateway Online", "docs": "/docs"}
 
 
+@app.get("/style.css")
+async def get_style():
+    css_file = os.path.join(static_dir, "style.css")
+    if os.path.exists(css_file):
+        return FileResponse(css_file, media_type="text/css")
+    return {"error": "CSS not found"}
+
+
+@app.get("/app.js")
+async def get_app_js():
+    js_file = os.path.join(static_dir, "app.js")
+    if os.path.exists(js_file):
+        return FileResponse(js_file, media_type="application/javascript")
+    return {"error": "JS not found"}
+
+
 @app.get("/api/health")
 def health_check():
     """System health check and engine readiness telemetry."""
