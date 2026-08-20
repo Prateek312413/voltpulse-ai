@@ -27,6 +27,11 @@ ENV/
 Thumbs.db
 
 # Unpublished Research Documents & Internal Engines (Protected)
+/03_ai_builders_hackathon/
+/05_call_e_ai_agent/
+/06_global_innovation_v2/
+/09_battery_health_forecast_engine/
+/10_aws_trainium_frontier/
 /prd.md
 /app/
 /data/
