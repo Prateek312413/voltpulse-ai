@@ -83,8 +83,8 @@ flowchart TB
 
 ### 1. Clone & Navigate to Folder
 ```bash
-git clone https://github.com/Prateek312413/voltpulse-ai.git
-cd voltpulse-ai/12_midnight_bioveil_zk
+git clone https://github.com/Prateek312413/BrainWave.git
+cd BrainWave
 ```
 
 ### 2. Install Dependencies

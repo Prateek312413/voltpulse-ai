@@ -13,7 +13,7 @@
 ## 🔗 Project Links
 - **Hackathon**: [Brainwave 2026 – Midnight Track](https://brainwave-2026-midnight-track.devpost.com/)
 - **Track**: Open Innovation — Midnight Blockchain
-- **GitHub Repository**: Prateek312413/voltpulse-ai (Folder `12_midnight_bioveil_zk/`)
+- **GitHub Repository**: [https://github.com/Prateek312413/BrainWave](https://github.com/Prateek312413/BrainWave)
 - **Live Demo Video / Pitch**: Included in repository demo kit
 
 ---
