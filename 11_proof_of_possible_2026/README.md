@@ -77,8 +77,8 @@ $$h_{\text{root}} = \text{MerkleTree}(\{h_1, h_2, \dots, h_k\})$$
 ### Installation
 ```bash
 # Clone the repository
-git clone https://github.com/Prateek312413/voltpulse-ai.git
-cd 11_proof_of_possible_2026
+git clone https://github.com/Prateek312413/proof_of_possible.git
+cd proof_of_possible
 
 # Install lightweight dependencies
 pip install -r requirements.txt

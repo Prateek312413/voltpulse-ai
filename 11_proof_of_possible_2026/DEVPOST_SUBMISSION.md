@@ -35,7 +35,8 @@ Generative AI models produce highly fluent, plausible-sounding assertions that o
 
 * **Local Zero-Config Launcher**:
   ```bash
-  cd 11_proof_of_possible_2026
+  git clone https://github.com/Prateek312413/proof_of_possible.git
+  cd proof_of_possible
   pip install -r requirements.txt
   python run.py
   ```
