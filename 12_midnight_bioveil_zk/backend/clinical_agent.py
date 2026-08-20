@@ -56,8 +56,8 @@ class ClinicalPharmacovigilanceSentinel:
 
 class BayesianBiomarkerTrajectoryEngine:
     """
-    Models longitudinal clinical biomarker drift and adherence trajectory
-    with Bayesian credible intervals (±1.96σ, 95% confidence).
+    Standard Clinical Protocol Adherence & Safety Tracking Engine.
+    Evaluates protocol checkpoint projections within safety baselines.
     """
 
     @staticmethod
@@ -67,12 +67,11 @@ class BayesianBiomarkerTrajectoryEngine:
         decay_rate: float = 0.002
     ) -> Dict[str, Any]:
         """
-        Computes Gaussian Process-inspired trajectory bounds over clinical trial weeks.
+        Computes standard clinical safety margins over trial milestone weeks.
         """
         trajectory = []
         for week in range(0, weeks_in_trial + 1, 2):
             mean_val = round(baseline_egfr * math.exp(-decay_rate * week), 2)
-            # Uncertainty expands with time
             sigma = round(1.2 + 0.35 * math.sqrt(week), 2)
             lower_95 = round(max(0, mean_val - 1.96 * sigma), 2)
             upper_95 = round(mean_val + 1.96 * sigma, 2)
@@ -93,8 +92,8 @@ class BayesianBiomarkerTrajectoryEngine:
         return {
             "trajectory_points": trajectory,
             "overall_adherence_safety_score": f"{adherence_confidence}%",
-            "bayesian_model": "Gaussian Process Prior with Matérn-5/2 Kernel (±1.96σ CI)",
-            "zk_trajectory_hash": poseidon_hash("BAYESIAN_TRAJECTORY", baseline_egfr, weeks_in_trial, adherence_confidence)
+            "model_type": "Standard Clinical Safety Margin Forecast",
+            "zk_trajectory_hash": poseidon_hash("SAFETY_TRAJECTORY", baseline_egfr, weeks_in_trial, adherence_confidence)
         }
 
 

@@ -357,7 +357,7 @@ const PatientPortal = {
           <i class="fa-solid fa-shield-halved"></i> Adherence Safety Score: ${bData.overall_adherence_safety_score}
         </div>
         <div>Baseline eGFR: <strong>${this.currentPatient.egfr_level} mL/min</strong></div>
-        <div>Model: <em>${bData.bayesian_model}</em></div>
+        <div>Projection: <em>${bData.model_type || 'Standard Clinical Safety Forecast'}</em></div>
         <div style="font-family: var(--font-mono); font-size: 0.7rem; color: #c4b5fd; margin-top: 0.3rem;">
           ZK Trajectory Hash: ${bData.zk_trajectory_hash.slice(0, 20)}...
         </div>
