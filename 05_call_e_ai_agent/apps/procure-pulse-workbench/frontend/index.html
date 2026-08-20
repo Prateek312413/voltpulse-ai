@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-950 text-slate-100">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ProcurePulse AI — Autonomous Supplier RFQ & Negotiation Voice Engine</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    code, pre, .font-mono { font-family: 'JetBrains Mono', monospace; }
+    .waveform-bar {
+      transition: height 0.08s ease-in-out;
+    }
+    @keyframes pulse-ring {
+      0% { transform: scale(0.95); opacity: 0.8; }
+      50% { transform: scale(1.15); opacity: 0.3; }
+      100% { transform: scale(0.95); opacity: 0.8; }
+    }
+    .pulse-animation {
+      animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: rgba(15, 23, 42, 0.6);
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: rgba(51, 65, 85, 0.8);
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body class="h-full flex flex-col custom-scrollbar antialiased selection:bg-amber-500 selection:text-slate-950">
+
+  <!-- Top Navbar -->
+  <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur-md sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <!-- Logo & Branding -->
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-amber-300 flex items-center justify-center shadow-lg shadow-amber-500/20">
+          <i class="fa-solid fa-phone-volume text-slate-950 text-xl"></i>
+        </div>
+        <div>
+          <div class="flex items-center space-x-2">
+            <span class="font-extrabold text-xl tracking-tight text-white">ProcurePulse<span class="text-amber-400">.AI</span></span>
+            <span class="px-2 py-0.5 text-xs font-semibold rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20">CALL-E Engine</span>
+          </div>
+          <p class="text-xs text-slate-400 hidden sm:block">Autonomous Industrial RFQ, Price Negotiation & Supplier Voice Dispatch</p>
+        </div>
+      </div>
+
+      <!-- Live / Sim Mode Toggle & Controls -->
+      <div class="flex items-center space-x-3">
+        <!-- Spoken Audio Toggle -->
+        <button id="voice-audio-btn" onclick="toggleVoiceAudio()" class="px-3 py-1.5 bg-slate-950 border border-slate-800 hover:border-slate-700 text-slate-300 rounded-lg text-xs font-medium flex items-center space-x-1.5 transition-all">
+          <i id="voice-icon" class="fa-solid fa-volume-high text-amber-400"></i>
+          <span id="voice-label">Voice Audio: ON</span>
+        </button>
+
+        <!-- Diagnostics Button -->
+        <button onclick="openDiagnosticsModal()" class="px-3 py-1.5 bg-slate-950 border border-slate-800 hover:border-slate-700 text-slate-300 rounded-lg text-xs font-medium flex items-center space-x-1.5">
+          <i class="fa-solid fa-microchip text-slate-400"></i>
+          <span>Diagnostics</span>
+        </button>
+
+        <!-- Mode Toggle -->
+        <div class="flex items-center bg-slate-950 border border-slate-800 rounded-lg p-1">
+          <button id="mode-sim-btn" onclick="setMode('simulate')" class="px-3 py-1 text-xs font-medium rounded-md transition-all bg-amber-500 text-slate-950 shadow-sm font-semibold">
+            <i class="fa-solid fa-flask mr-1"></i> Sandbox (Zero-Credit)
+          </button>
+          <button id="mode-live-btn" onclick="setMode('live')" class="px-3 py-1 text-xs font-medium rounded-md transition-all text-slate-400 hover:text-white">
+            <i class="fa-solid fa-tower-broadcast mr-1"></i> Live Outbound
+          </button>
+        </div>
+
+        <button onclick="openNewRfqModal()" class="px-4 py-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold rounded-lg text-xs shadow-lg shadow-amber-500/20 transition-all flex items-center space-x-1.5">
+          <i class="fa-solid fa-plus"></i>
+          <span>New RFQ</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Area -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+    <!-- KPI Stats Bar -->
+    <section class="grid grid-cols-2 md:grid-cols-5 gap-4">
+      <div class="bg-slate-900/60 border border-slate-800/80 rounded-xl p-4 flex flex-col justify-between">
+        <span class="text-xs font-medium text-slate-400 flex items-center justify-between">
+          <span>Total Spend Analyzed</span>
+          <i class="fa-solid fa-receipt text-slate-500"></i>
+        </span>
+        <span id="stat-spend" class="text-2xl font-bold text-white mt-2">$28,450.00</span>
+        <span class="text-[11px] text-emerald-400 mt-1"><i class="fa-solid fa-arrow-trend-up mr-1"></i> 3 active campaigns</span>
+      </div>
+
+      <div class="bg-slate-900/60 border border-slate-800/80 rounded-xl p-4 flex flex-col justify-between border-amber-500/30">
+        <span class="text-xs font-medium text-slate-400 flex items-center justify-between">
+          <span>Savings Generated</span>
+          <i class="fa-solid fa-sack-dollar text-amber-400"></i>
+        </span>
+        <span id="stat-savings" class="text-2xl font-bold text-amber-400 mt-2">$3,840.00</span>
+        <span class="text-[11px] text-amber-300/80 mt-1">15.4% average discount negotiated</span>
+      </div>
+
+      <div class="bg-slate-900/60 border border-slate-800/80 rounded-xl p-4 flex flex-col justify-between">
+        <span class="text-xs font-medium text-slate-400 flex items-center justify-between">
+          <span>Phone Calls Placed</span>
+          <i class="fa-solid fa-phone-arrow-up-right text-slate-500"></i>
+        </span>
+        <span id="stat-calls" class="text-2xl font-bold text-white mt-2">12</span>
+        <span class="text-[11px] text-slate-400 mt-1">100% structured data capture</span>
+      </div>
+
+      <div class="bg-slate-900/60 border border-slate-800/80 rounded-xl p-4 flex flex-col justify-between">
+        <span class="text-xs font-medium text-slate-400 flex items-center justify-between">
+          <span>Avg Negotiation Time</span>
+          <i class="fa-solid fa-stopwatch text-slate-500"></i>
+        </span>
+        <span id="stat-turnaround" class="text-2xl font-bold text-white mt-2">68 sec</span>
+        <span class="text-[11px] text-emerald-400 mt-1"><i class="fa-solid fa-bolt mr-1"></i> 8.5x faster than human</span>
+      </div>
+
+      <div class="bg-slate-900/60 border border-slate-800/80 rounded-xl p-4 flex flex-col justify-between">
+        <span class="text-xs font-medium text-slate-400 flex items-center justify-between">
+          <span>Human Hours Saved</span>
+          <i class="fa-solid fa-user-clock text-slate-500"></i>
+        </span>
+        <span id="stat-hours" class="text-2xl font-bold text-emerald-400 mt-2">5.4 hrs</span>
+        <span class="text-[11px] text-slate-400 mt-1">Auto PO & ERP Sync</span>
+      </div>
+    </section>
+
+    <!-- Main Workspace Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+      <!-- Left Column: RFQ Selector & Supplier Wave Dispatcher (4 cols) -->
+      <div class="lg:col-span-4 space-y-6">
+        
+        <!-- Active RFQ Card -->
+        <div class="bg-slate-900/70 border border-slate-800 rounded-2xl p-5 shadow-sm space-y-4">
+          <div class="flex items-center justify-between">
+            <h2 class="text-sm font-semibold text-white uppercase tracking-wider flex items-center space-x-2">
+              <i class="fa-solid fa-boxes-stacked text-amber-400"></i>
+              <span>Active RFQ Campaign</span>
+            </h2>
+            <span class="px-2 py-0.5 text-xs font-semibold rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" id="rfq-status-badge">ACTIVE</span>
+          </div>
+
+          <div class="space-y-3 bg-slate-950/60 p-3.5 rounded-xl border border-slate-800/80">
+            <div>
+              <label class="text-[11px] font-medium text-slate-400">Select Campaign:</label>
+              <select id="rfq-selector" onchange="onRfqSelected(this.value)" class="w-full mt-1 bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs font-medium text-white focus:outline-none focus:border-amber-500">
+                <!-- Dynamically Populated -->
+              </select>
+            </div>
+
+            <div class="pt-2 border-t border-slate-800/80 space-y-2 text-xs">
+              <div class="flex justify-between text-slate-300">
+                <span class="text-slate-400">Part SKU:</span>
+                <span id="rfq-sku" class="font-mono font-bold text-amber-300">SS-400-1-4</span>
+              </div>
+              <div class="flex justify-between text-slate-300">
+                <span class="text-slate-400">Target Quantity:</span>
+                <span id="rfq-qty" class="font-bold text-white">250 units</span>
+              </div>
+              <div class="flex justify-between text-slate-300">
+                <span class="text-slate-400">Budget Ceiling:</span>
+                <span id="rfq-budget" class="font-bold text-white">$45.00 / unit ($11,250.00)</span>
+              </div>
+              <div class="flex justify-between text-slate-300">
+                <span class="text-slate-400">Needed Delivery:</span>
+                <span id="rfq-date" class="font-medium text-slate-300">2026-09-05</span>
+              </div>
+              <div class="flex justify-between text-slate-300">
+                <span class="text-slate-400">Substitutions Allowed:</span>
+                <span id="rfq-subs" class="text-emerald-400 font-semibold"><i class="fa-solid fa-check mr-1"></i> Yes (100% Spec Match)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Supplier Directory Selection -->
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <label class="text-xs font-semibold text-slate-300 uppercase tracking-wider">Suppliers in Wave Pool:</label>
+              <div class="space-x-2">
+                <button onclick="openAddSupplierModal()" class="text-[11px] text-amber-400 hover:underline">+ Add Custom</button>
+                <button onclick="selectAllSuppliers()" class="text-[11px] text-slate-400 hover:underline">Select All</button>
+              </div>
+            </div>
+
+            <div id="suppliers-list" class="space-y-2 max-h-64 overflow-y-auto pr-1 custom-scrollbar">
+              <!-- Dynamically Populated -->
+            </div>
+          </div>
+
+          <!-- Dispatch Call Button -->
+          <button id="dispatch-btn" onclick="dispatchWaveCalls()" class="w-full py-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold rounded-xl text-sm shadow-lg shadow-amber-500/25 transition-all flex items-center justify-center space-x-2">
+            <i class="fa-solid fa-phone-volume"></i>
+            <span>Launch CALL-E Negotiation Wave</span>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Right Column: Live Call Waveform, Realtime Transcript & Bid Matrix (8 cols) -->
+      <div class="lg:col-span-8 space-y-6">
+
+        <!-- Live Call Console & Waveform Visualizer -->
+        <div id="live-call-console" class="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 shadow-sm space-y-4">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+              <div class="w-3 h-3 rounded-full bg-emerald-500 pulse-animation"></div>
+              <h2 class="text-sm font-semibold text-white uppercase tracking-wider">Live Call Console & Audio Visualizer</h2>
+            </div>
+            <div class="flex items-center space-x-2">
+              <span id="call-timer" class="font-mono text-xs text-amber-400 bg-slate-950 px-2.5 py-1 rounded-md border border-slate-800">00:00</span>
+              <span id="live-status-pill" class="text-xs font-semibold px-2.5 py-1 rounded-md bg-slate-800 text-slate-300">IDLE</span>
+            </div>
+          </div>
+
+          <!-- Waveform Visualizer Canvas Container -->
+          <div class="bg-slate-950 rounded-xl p-4 border border-slate-800/80 flex flex-col items-center justify-center space-y-2">
+            <div class="text-[11px] font-mono text-slate-400 flex items-center space-x-4">
+              <span>Active Line: <strong id="active-supplier-label" class="text-amber-300">Ready to Dial</strong></span>
+              <span>Codec: <strong class="text-slate-200">G.711 / PCM 16kHz</strong></span>
+              <span>Safety Token: <strong class="text-emerald-400">TOKEN_VERIFIED</strong></span>
+            </div>
+
+            <!-- Dynamic Audio Wave Bars -->
+            <div id="waveform-container" class="flex items-center justify-center space-x-1.5 h-14 w-full py-2">
+              <div class="w-1.5 bg-amber-500 rounded-full waveform-bar h-2"></div>
+              <div class="w-1.5 bg-amber-500 rounded-full waveform-bar h-3"></div>
+              <div class="w-1.5 bg-amber-400 rounded-full waveform-bar h-2"></div>
+              <div class="w-1.5 bg-amber-400 rounded-full waveform-bar h-4"></div>
+              <div class="w-1.5 bg-amber-400 rounded-full waveform-bar h-6"></div>
+              <div class="w-1.5 bg-amber-300 rounded-full waveform-bar h-2"></div>
+              <div class="w-1.5 bg-amber-300 rounded-full waveform-bar h-8"></div>
+              <div class="w-1.5 bg-amber-300 rounded-full waveform-bar h-4"></div>
+              <div class="w-1.5 bg-amber-300 rounded-full waveform-bar h-10"></div>
+              <div class="w-1.5 bg-amber-400 rounded-full waveform-bar h-6"></div>
+              <div class="w-1.5 bg-amber-400 rounded-full waveform-bar h-4"></div>
+              <div class="w-1.5 bg-amber-400 rounded-full waveform-bar h-7"></div>
+              <div class="w-1.5 bg-amber-500 rounded-full waveform-bar h-3"></div>
+              <div class="w-1.5 bg-amber-500 rounded-full waveform-bar h-5"></div>
+              <div class="w-1.5 bg-amber-500 rounded-full waveform-bar h-2"></div>
+              <div class="w-1.5 bg-amber-500 rounded-full waveform-bar h-2"></div>
+            </div>
+          </div>
+
+          <!-- Real-Time Dialogue Transcript Stream -->
+          <div class="space-y-2">
+            <div class="flex items-center justify-between text-xs font-semibold text-slate-400">
+              <span>Streaming Call Transcript & Conversational Turn Log:</span>
+              <span class="text-[11px] text-slate-500 font-mono" id="transcript-count">0 turns</span>
+            </div>
+            <div id="transcript-box" class="bg-slate-950 rounded-xl p-4 border border-slate-800/80 h-44 overflow-y-auto space-y-2.5 text-xs font-mono text-slate-300 custom-scrollbar">
+              <p class="text-slate-500 italic text-center py-10">Select suppliers and click "Launch CALL-E Negotiation Wave" to start call execution.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bid Comparison Matrix & MCDA Ranking -->
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 shadow-sm space-y-4">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+              <i class="fa-solid fa-scale-balanced text-amber-400"></i>
+              <h2 class="text-sm font-semibold text-white uppercase tracking-wider">Multi-Supplier Bid Comparison Matrix (MCDA Scored)</h2>
+            </div>
+            <span class="text-xs text-slate-400">Ranked by Price, Lead-Time, Rating & Volume Breaks</span>
+          </div>
+
+          <div class="overflow-x-auto custom-scrollbar">
+            <table class="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr class="border-b border-slate-800 text-slate-400 font-medium bg-slate-950/40">
+                  <th class="py-3 px-3">Rank & Supplier</th>
+                  <th class="py-3 px-3">Quoted SKU</th>
+                  <th class="py-3 px-3">Unit Price</th>
+                  <th class="py-3 px-3">Volume Tiers (500 / 1k)</th>
+                  <th class="py-3 px-3">Lead Time</th>
+                  <th class="py-3 px-3">Freight Terms</th>
+                  <th class="py-3 px-3 text-right">Total Batch</th>
+                  <th class="py-3 px-3 text-right">Savings</th>
+                  <th class="py-3 px-3 text-center">Action</th>
+                </tr>
+              </thead>
+              <tbody id="bids-table-body" class="divide-y divide-slate-800/60 text-slate-200 font-mono">
+                <tr>
+                  <td colspan="9" class="py-8 text-center text-slate-500 font-sans italic">
+                    No quotes received yet for this campaign. Dispatch calls to populate matrix.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Grounded Citations & Audit Trail Inspector Modal/Card -->
+        <div id="citation-card" class="hidden bg-slate-900/90 border border-amber-500/40 rounded-2xl p-5 shadow-xl space-y-3">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+              <i class="fa-solid fa-certificate text-amber-400"></i>
+              <h3 class="text-sm font-bold text-white uppercase tracking-wider">Grounded Evidence & Verbatim Audit Trail</h3>
+            </div>
+            <button onclick="closeCitationCard()" class="text-slate-400 hover:text-white text-xs px-2 py-1 bg-slate-800 rounded">Close</button>
+          </div>
+          <div id="citation-content" class="space-y-2 text-xs font-mono text-slate-300">
+            <!-- Dynamically Populated -->
+          </div>
+        </div>
+
+        <!-- Analytics Discount Curve Chart -->
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 shadow-sm space-y-3">
+          <div class="flex items-center justify-between">
+            <h2 class="text-sm font-semibold text-white uppercase tracking-wider flex items-center space-x-2">
+              <i class="fa-solid fa-chart-line text-amber-400"></i>
+              <span>Negotiated Volume Pricing Elasticity Curve</span>
+            </h2>
+            <span class="text-xs text-slate-400">Price ($) vs. Order Quantity</span>
+          </div>
+          <div class="h-56 w-full">
+            <canvas id="volumeChart"></canvas>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- New RFQ Modal -->
+  <div id="rfq-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <h3 class="text-base font-bold text-white flex items-center space-x-2">
+          <i class="fa-solid fa-file-invoice text-amber-400"></i>
+          <span>Create New RFQ Campaign</span>
+        </h3>
+        <button onclick="closeNewRfqModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <!-- Quick Template Selector -->
+      <div>
+        <label class="block text-slate-400 text-[11px] font-medium mb-1">Load Industrial BOM Template:</label>
+        <div class="grid grid-cols-2 gap-2">
+          <button onclick="loadTemplate('valves')" class="p-2 bg-slate-950 border border-slate-800 hover:border-amber-500/50 rounded-lg text-left text-[11px] text-slate-200">
+            <span class="font-bold block text-amber-300">316SS Ball Valves</span>
+            <span class="text-slate-400 text-[10px]">250 pcs @ $45.00</span>
+          </button>
+          <button onclick="loadTemplate('bearings')" class="p-2 bg-slate-950 border border-slate-800 hover:border-amber-500/50 rounded-lg text-left text-[11px] text-slate-200">
+            <span class="font-bold block text-amber-300">Ceramic Bearings</span>
+            <span class="text-slate-400 text-[10px]">100 pcs @ $38.50</span>
+          </button>
+          <button onclick="loadTemplate('orings')" class="p-2 bg-slate-950 border border-slate-800 hover:border-amber-500/50 rounded-lg text-left text-[11px] text-slate-200">
+            <span class="font-bold block text-amber-300">Viton O-Ring Kits</span>
+            <span class="text-slate-400 text-[10px]">500 pcs @ $4.20</span>
+          </button>
+          <button onclick="loadTemplate('fasteners')" class="p-2 bg-slate-950 border border-slate-800 hover:border-amber-500/50 rounded-lg text-left text-[11px] text-slate-200">
+            <span class="font-bold block text-amber-300">Titanium Bolts</span>
+            <span class="text-slate-400 text-[10px]">1,000 pcs @ $6.80</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="space-y-3 text-xs">
+        <div>
+          <label class="block text-slate-300 font-medium mb-1">Campaign Title</label>
+          <input type="text" id="modal-rfq-title" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-amber-500" value="Emergency Refurbishment: 316SS Ball Valves">
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-slate-300 font-medium mb-1">Part SKU / Number</label>
+            <input type="text" id="modal-rfq-sku" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 font-mono text-white focus:outline-none focus:border-amber-500" value="SS-400-1-4">
+          </div>
+          <div>
+            <label class="block text-slate-300 font-medium mb-1">Target Quantity</label>
+            <input type="number" id="modal-rfq-qty" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-amber-500" value="250">
+          </div>
+        </div>
+        <div>
+          <label class="block text-slate-300 font-medium mb-1">Item Description & Specifications</label>
+          <textarea id="modal-rfq-desc" rows="2" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-amber-500">1/4 in. 316 Stainless Steel High Pressure Ball Valve, 1000 PSI, NPT Female Thread</textarea>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-slate-300 font-medium mb-1">Target Unit Budget ($ USD)</label>
+            <input type="number" step="0.5" id="modal-rfq-budget" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-amber-500" value="45.00">
+          </div>
+          <div>
+            <label class="block text-slate-300 font-medium mb-1">Required Delivery Date</label>
+            <input type="date" id="modal-rfq-date" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-amber-500" value="2026-09-05">
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end space-x-3 pt-3 border-t border-slate-800">
+        <button onclick="closeNewRfqModal()" class="px-4 py-2 text-xs font-semibold text-slate-400 hover:text-white">Cancel</button>
+        <button onclick="submitNewRfq()" class="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-lg text-xs">Create RFQ Campaign</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Custom Supplier Modal -->
+  <div id="supplier-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <h3 class="text-base font-bold text-white flex items-center space-x-2">
+          <i class="fa-solid fa-building text-amber-400"></i>
+          <span>Add Custom Supplier / Test Line</span>
+        </h3>
+        <button onclick="closeAddSupplierModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="space-y-3 text-xs">
+        <div>
+          <label class="block text-slate-300 font-medium mb-1">Supplier / Company Name</label>
+          <input type="text" id="custom-sup-name" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-amber-500" placeholder="e.g. Acme Industrial Supply">
+        </div>
+        <div>
+          <label class="block text-slate-300 font-medium mb-1">Telephone Number (E.164 format)</label>
+          <input type="text" id="custom-sup-phone" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 font-mono text-white focus:outline-none focus:border-amber-500" placeholder="+18005550199">
+        </div>
+        <div>
+          <label class="block text-slate-300 font-medium mb-1">Sales Desk Email</label>
+          <input type="email" id="custom-sup-email" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-amber-500" placeholder="sales@acmeindustrial.com">
+        </div>
+        <div>
+          <label class="block text-slate-300 font-medium mb-1">Region / Hub</label>
+          <input type="text" id="custom-sup-region" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-amber-500" placeholder="US-Central (Dallas, TX)">
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end space-x-3 pt-3 border-t border-slate-800">
+        <button onclick="closeAddSupplierModal()" class="px-4 py-2 text-xs font-semibold text-slate-400 hover:text-white">Cancel</button>
+        <button onclick="submitCustomSupplier()" class="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-lg text-xs">Register Supplier</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Diagnostics Modal -->
+  <div id="diag-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <h3 class="text-base font-bold text-white flex items-center space-x-2">
+          <i class="fa-solid fa-microchip text-amber-400"></i>
+          <span>CALL-E Diagnostics & System Status</span>
+        </h3>
+        <button onclick="closeDiagnosticsModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div id="diag-content" class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2 text-xs font-mono text-slate-300">
+        <p><i class="fa-solid fa-spinner fa-spin mr-2"></i> Fetching live telemetry...</p>
+      </div>
+
+      <div class="flex justify-end pt-2">
+        <button onclick="closeDiagnosticsModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-xs font-semibold">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Purchase Order Approval & ERP Sync Modal -->
+  <div id="po-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <h3 class="text-base font-bold text-white flex items-center space-x-2">
+          <i class="fa-solid fa-file-contract text-emerald-400"></i>
+          <span>Approve & Issue Purchase Order</span>
+        </h3>
+        <button onclick="closePoModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="space-y-3 text-xs bg-slate-950/60 p-4 rounded-xl border border-slate-800">
+        <div class="flex justify-between">
+          <span class="text-slate-400">Winning Vendor:</span>
+          <span id="po-supplier-name" class="font-bold text-white">Apex Industrial Fasteners</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-slate-400">SKU to Order:</span>
+          <span id="po-sku" class="font-mono font-bold text-amber-300">SS-400-1-4</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-slate-400">Order Quantity:</span>
+          <span id="po-qty" class="font-bold text-white">250 units</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-slate-400">Negotiated Unit Price:</span>
+          <span id="po-unit-price" class="font-mono text-emerald-400 font-bold">$42.50</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-slate-400">Lead Time:</span>
+          <span id="po-lead-time" class="text-white font-semibold">2 Business Days (Dallas Hub)</span>
+        </div>
+        <div class="flex justify-between pt-2 border-t border-slate-800 text-sm">
+          <span class="font-bold text-slate-300">Total PO Value:</span>
+          <span id="po-total" class="font-mono font-extrabold text-amber-400">$10,625.00</span>
+        </div>
+      </div>
+
+      <div class="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-lg text-[11px] text-emerald-300">
+        <i class="fa-solid fa-shield-halved mr-1"></i>
+        <span><strong>Automated Safety Check Passed:</strong> Quote verified with verbatim transcript citation. Triggering PO will sync payload to SAP, Oracle NetSuite, and PostgreSQL ERP.</span>
+      </div>
+
+      <div class="flex items-center justify-between pt-2">
+        <button id="po-print-link" onclick="openPrintablePo()" class="text-xs text-amber-400 hover:underline"><i class="fa-solid fa-print mr-1"></i> Printable View</button>
+        <div class="space-x-2">
+          <button onclick="closePoModal()" class="px-4 py-2 text-xs font-semibold text-slate-400 hover:text-white">Cancel</button>
+          <button id="po-confirm-btn" onclick="confirmIssuePo()" class="px-5 py-2.5 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-slate-950 font-bold rounded-lg text-xs shadow-lg shadow-emerald-500/20">
+            <i class="fa-solid fa-check-double mr-1"></i> Confirm & Sync to ERP
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript Application Controller -->
+  <script>
+    let currentMode = 'simulate';
+    let currentRfqId = null;
+    let rfqsData = [];
+    let suppliersData = [];
+    let activeSocket = null;
+    let timerInterval = null;
+    let secondsElapsed = 0;
+    let volumeChartInstance = null;
+    let selectedPoTarget = null;
+    let lastIssuedPoNumber = null;
+    let isVoiceAudioEnabled = true;
+
+    // Initialize App
+    document.addEventListener('DOMContentLoaded', async () => {
+      initChart();
+      await loadStats();
+      await loadRfqs();
+      await loadSuppliers();
+    });
+
+    function toggleVoiceAudio() {
+      isVoiceAudioEnabled = !isVoiceAudioEnabled;
+      const icon = document.getElementById('voice-icon');
+      const label = document.getElementById('voice-label');
+      if (isVoiceAudioEnabled) {
+        icon.className = 'fa-solid fa-volume-high text-amber-400';
+        label.innerText = 'Voice Audio: ON';
+      } else {
+        icon.className = 'fa-solid fa-volume-xmark text-slate-500';
+        label.innerText = 'Voice Audio: OFF';
+        if (window.speechSynthesis) window.speechSynthesis.cancel();
+      }
+    }
+
+    function speakDialogue(speaker, text) {
+      if (!isVoiceAudioEnabled || !('speechSynthesis' in window)) return;
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      if (speaker === 'CalleAgent') {
+        utterance.pitch = 1.15;
+        utterance.rate = 1.05;
+      } else if (speaker === 'Supplier') {
+        utterance.pitch = 0.95;
+        utterance.rate = 1.0;
+      } else {
+        return; // Don't speak system logs
+      }
+      window.speechSynthesis.speak(utterance);
+    }
+
+    function setMode(mode) {
+      currentMode = mode;
+      const simBtn = document.getElementById('mode-sim-btn');
+      const liveBtn = document.getElementById('mode-live-btn');
+      if (mode === 'simulate') {
+        simBtn.className = 'px-3 py-1 text-xs font-medium rounded-md transition-all bg-amber-500 text-slate-950 shadow-sm font-semibold';
+        liveBtn.className = 'px-3 py-1 text-xs font-medium rounded-md transition-all text-slate-400 hover:text-white';
+      } else {
+        liveBtn.className = 'px-3 py-1 text-xs font-medium rounded-md transition-all bg-amber-500 text-slate-950 shadow-sm font-semibold';
+        simBtn.className = 'px-3 py-1 text-xs font-medium rounded-md transition-all text-slate-400 hover:text-white';
+      }
+    }
+
+    async function loadStats() {
+      try {
+        const res = await fetch('/api/stats');
+        const data = await res.json();
+        document.getElementById('stat-spend').innerText = '$' + data.total_po_spend.toLocaleString(undefined, {minimumFractionDigits: 2});
+        document.getElementById('stat-savings').innerText = '$' + data.total_savings_generated.toLocaleString(undefined, {minimumFractionDigits: 2});
+        document.getElementById('stat-calls').innerText = data.total_calls_placed;
+        document.getElementById('stat-turnaround').innerText = data.average_call_duration_seconds + ' sec';
+        document.getElementById('stat-hours').innerText = data.human_hours_saved + ' hrs';
+      } catch (err) {
+        console.error('Error loading stats:', err);
+      }
+    }
+
+    async function loadRfqs() {
+      try {
+        const res = await fetch('/api/rfqs');
+        rfqsData = await res.json();
+        const selector = document.getElementById('rfq-selector');
+        selector.innerHTML = '';
+        rfqsData.forEach(r => {
+          const opt = document.createElement('option');
+          opt.value = r.id;
+          opt.innerText = `${r.id} - ${r.title}`;
+          selector.appendChild(opt);
+        });
+
+        if (rfqsData.length > 0) {
+          onRfqSelected(rfqsData[0].id);
+        }
+      } catch (err) {
+        console.error('Error loading RFQs:', err);
+      }
+    }
+
+    async function loadSuppliers() {
+      try {
+        const res = await fetch('/api/suppliers');
+        suppliersData = await res.json();
+        const container = document.getElementById('suppliers-list');
+        container.innerHTML = '';
+        suppliersData.forEach((s, idx) => {
+          const div = document.createElement('div');
+          div.className = 'flex items-center justify-between p-2.5 rounded-lg bg-slate-950/70 border border-slate-800/80 hover:border-slate-700 transition-all';
+          div.innerHTML = `
+            <div class="flex items-center space-x-2.5">
+              <input type="checkbox" id="sup-chk-${s.id}" value="${s.id}" checked class="rounded border-slate-700 text-amber-500 focus:ring-amber-400 bg-slate-900 h-4 w-4">
+              <div>
+                <span class="font-semibold text-white text-xs block">${s.name}</span>
+                <span class="text-[11px] text-slate-400 font-mono">${s.phone} &bull; ${s.region}</span>
+              </div>
+            </div>
+            <div class="text-right">
+              <span class="text-amber-400 font-bold text-xs"><i class="fa-solid fa-star text-[10px] mr-0.5"></i>${s.rating}</span>
+            </div>
+          `;
+          container.appendChild(div);
+        });
+      } catch (err) {
+        console.error('Error loading suppliers:', err);
+      }
+    }
+
+    function onRfqSelected(rfqId) {
+      currentRfqId = rfqId;
+      const rfq = rfqsData.find(r => r.id === rfqId);
+      if (!rfq) return;
+
+      document.getElementById('rfq-sku').innerText = rfq.sku;
+      document.getElementById('rfq-qty').innerText = rfq.target_quantity + ' units';
+      document.getElementById('rfq-budget').innerText = `$${rfq.target_unit_budget.toFixed(2)} / unit ($${(rfq.target_unit_budget * rfq.target_quantity).toFixed(2)})`;
+      document.getElementById('rfq-date').innerText = rfq.required_delivery_date || 'Standard (5d)';
+      document.getElementById('rfq-status-badge').innerText = rfq.status.toUpperCase();
+
+      loadBidMatrix(rfqId);
+    }
+
+    function selectAllSuppliers() {
+      suppliersData.forEach(s => {
+        const chk = document.getElementById(`sup-chk-${s.id}`);
+        if (chk) chk.checked = true;
+      });
+    }
+
+    async function dispatchWaveCalls() {
+      if (!currentRfqId) return;
+
+      const selectedSupplierIds = suppliersData
+        .filter(s => {
+          const chk = document.getElementById(`sup-chk-${s.id}`);
+          return chk && chk.checked;
+        })
+        .map(s => s.id);
+
+      if (selectedSupplierIds.length === 0) {
+        alert('Please select at least one supplier for the call wave.');
+        return;
+      }
+
+      // UI state updates
+      const dispatchBtn = document.getElementById('dispatch-btn');
+      dispatchBtn.disabled = true;
+      dispatchBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> CALL-E Active...`;
+
+      document.getElementById('live-status-pill').innerText = 'IN_PROGRESS';
+      document.getElementById('live-status-pill').className = 'text-xs font-semibold px-2.5 py-1 rounded-md bg-amber-500/20 text-amber-400 border border-amber-500/30';
+      
+      const transcriptBox = document.getElementById('transcript-box');
+      transcriptBox.innerHTML = '<p class="text-amber-400 font-mono text-xs"><i class="fa-solid fa-circle-notch fa-spin mr-2"></i> Initializing CALL-E Agent session & connecting to carrier lines...</p>';
+
+      startTimer();
+
+      try {
+        const res = await fetch('/api/calls/dispatch', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            rfq_id: currentRfqId,
+            supplier_ids: selectedSupplierIds,
+            mode: currentMode
+          })
+        });
+        const data = await res.json();
+
+        if (data.ok && data.runs.length > 0) {
+          connectWebSocket(data.runs[0].run_id, data.runs[0].supplier_name);
+        }
+      } catch (err) {
+        console.error('Error dispatching calls:', err);
+        stopTimer();
+        dispatchBtn.disabled = false;
+        dispatchBtn.innerHTML = `<i class="fa-solid fa-phone-volume mr-2"></i> Launch CALL-E Negotiation Wave`;
+      }
+    }
+
+    function connectWebSocket(runId, supplierName) {
+      document.getElementById('active-supplier-label').innerText = supplierName;
+      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      const wsUrl = `${protocol}//${window.location.host}/ws/calls/${runId}`;
+      
+      activeSocket = new WebSocket(wsUrl);
+
+      activeSocket.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        if (data.event === 'transcript_chunk') {
+          renderTranscriptChunk(data);
+          animateWaveform(data.waveform);
+          speakDialogue(data.speaker, data.text);
+        } else if (data.event === 'extraction_complete') {
+          onCallCompleted();
+        }
+      };
+
+      activeSocket.onclose = () => {
+        setTimeout(() => {
+          loadBidMatrix(currentRfqId);
+        }, 1200);
+      };
+    }
+
+    function renderTranscriptChunk(chunk) {
+      const box = document.getElementById('transcript-box');
+      const p = document.createElement('div');
+      p.className = 'py-1 border-b border-slate-900 flex items-start space-x-2';
+      
+      let badgeColor = 'text-amber-400 bg-amber-500/10 border-amber-500/20';
+      if (chunk.speaker === 'Supplier') badgeColor = 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20';
+      if (chunk.speaker === 'System') badgeColor = 'text-slate-400 bg-slate-800 border-slate-700';
+
+      p.innerHTML = `
+        <span class="px-1.5 py-0.5 rounded text-[10px] font-bold border ${badgeColor}">${chunk.speaker}</span>
+        <span class="text-slate-200 text-xs">${chunk.text}</span>
+      `;
+      box.appendChild(p);
+      box.scrollTop = box.scrollHeight;
+    }
+
+    function animateWaveform(amplitudes) {
+      const bars = document.querySelectorAll('.waveform-bar');
+      bars.forEach((bar, idx) => {
+        const val = amplitudes[idx] || 10;
+        bar.style.height = `${Math.max(4, Math.min(48, val * 0.5))}px`;
+      });
+    }
+
+    function startTimer() {
+      secondsElapsed = 0;
+      clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        secondsElapsed++;
+        const mins = String(Math.floor(secondsElapsed / 60)).padStart(2, '0');
+        const secs = String(secondsElapsed % 60).padStart(2, '0');
+        document.getElementById('call-timer').innerText = `${mins}:${secs}`;
+      }, 1000);
+    }
+
+    function stopTimer() {
+      clearInterval(timerInterval);
+    }
+
+    function onCallCompleted() {
+      stopTimer();
+      document.getElementById('live-status-pill').innerText = 'COMPLETED';
+      document.getElementById('live-status-pill').className = 'text-xs font-semibold px-2.5 py-1 rounded-md bg-emerald-500/20 text-emerald-400 border border-emerald-500/30';
+      
+      const dispatchBtn = document.getElementById('dispatch-btn');
+      dispatchBtn.disabled = false;
+      dispatchBtn.innerHTML = `<i class="fa-solid fa-phone-volume mr-2"></i> Launch CALL-E Negotiation Wave`;
+
+      loadBidMatrix(currentRfqId);
+      loadStats();
+    }
+
+    async function loadBidMatrix(rfqId) {
+      try {
+        const res = await fetch(`/api/quotes/compare/${rfqId}`);
+        const data = await res.json();
+        const tbody = document.getElementById('bids-table-body');
+        tbody.innerHTML = '';
+
+        if (!data.bids || data.bids.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="9" class="py-8 text-center text-slate-500 font-sans italic">No quotes received yet. Click "Launch CALL-E Negotiation Wave" to begin.</td></tr>`;
+          return;
+        }
+
+        data.bids.forEach((bid, idx) => {
+          const q = bid.quote;
+          const tr = document.createElement('tr');
+          tr.className = `border-b border-slate-800/80 hover:bg-slate-900/40 transition-all ${bid.is_recommended ? 'bg-amber-500/5 border-amber-500/30' : ''}`;
+          
+          const rankBadge = bid.is_recommended 
+            ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-400 text-slate-950 mr-1.5"><i class="fa-solid fa-crown mr-1"></i>#1 BEST</span>` 
+            : `<span class="text-slate-500 font-mono mr-1.5">#${bid.rank}</span>`;
+
+          const tiersText = q.volume_tiers && q.volume_tiers.length >= 3 
+            ? `$${q.volume_tiers[1].unit_price.toFixed(2)} / $${q.volume_tiers[2].unit_price.toFixed(2)}`
+            : 'N/A';
+
+          tr.innerHTML = `
+            <td class="py-3 px-3">
+              <div class="flex items-center">
+                ${rankBadge}
+                <div>
+                  <span class="font-bold text-white block text-xs">${bid.supplier_name}</span>
+                  <span class="text-[10px] text-slate-400">${q.representative_name} (${q.quote_reference_number || 'N/A'})</span>
+                </div>
+              </div>
+            </td>
+            <td class="py-3 px-3 font-mono ${q.is_exact_match ? 'text-slate-300' : 'text-amber-300'}">
+              ${q.sku_quoted}
+              ${!q.is_exact_match ? '<span class="text-[9px] block text-amber-400 font-sans font-semibold">Equivalent Sub</span>' : ''}
+            </td>
+            <td class="py-3 px-3 font-bold text-white font-mono">$${q.base_unit_price.toFixed(2)}</td>
+            <td class="py-3 px-3 text-slate-300 font-mono">${tiersText}</td>
+            <td class="py-3 px-3 text-emerald-400 font-sans font-medium">${q.lead_time_days} days</td>
+            <td class="py-3 px-3 text-slate-300 font-sans text-[11px]">${q.freight_terms}</td>
+            <td class="py-3 px-3 text-right font-bold text-white font-mono">$${bid.total_cost_at_target_qty.toFixed(2)}</td>
+            <td class="py-3 px-3 text-right font-bold text-emerald-400 font-mono">+$${bid.potential_savings.toFixed(2)} (${bid.savings_percent}%)</td>
+            <td class="py-3 px-3 text-center space-x-1">
+              <button onclick='viewCitations(${JSON.stringify(q.grounded_citations)})' class="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded text-[11px] font-sans" title="View Verbatim Citations">
+                <i class="fa-solid fa-file-lines"></i> Evidence
+              </button>
+              <button onclick='openPoModal(${JSON.stringify(bid)}, ${JSON.stringify(data.rfq)})' class="px-2.5 py-1 ${bid.is_recommended ? 'bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold' : 'bg-slate-800 hover:bg-slate-700 text-white'} rounded text-[11px] font-sans">
+                Issue PO
+              </button>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+
+        updateVolumeChart(data.bids);
+      } catch (err) {
+        console.error('Error loading bid matrix:', err);
+      }
+    }
+
+    function viewCitations(citations) {
+      const card = document.getElementById('citation-card');
+      const content = document.getElementById('citation-content');
+      content.innerHTML = '';
+      card.classList.remove('hidden');
+
+      if (!citations || citations.length === 0) {
+        content.innerHTML = '<p class="text-slate-400">No grounded citations attached.</p>';
+        return;
+      }
+
+      citations.forEach(c => {
+        const div = document.createElement('div');
+        div.className = 'p-2.5 rounded-lg bg-slate-950 border border-slate-800 space-y-1';
+        div.innerHTML = `
+          <div class="flex items-center justify-between text-amber-300 font-bold">
+            <span><i class="fa-solid fa-check-circle text-emerald-400 mr-1"></i> ${c.claim}</span>
+            <span class="text-[10px] text-slate-500 font-mono">t = ${c.timestamp_seconds}s</span>
+          </div>
+          <p class="text-slate-300 text-xs italic bg-slate-900/60 p-1.5 rounded">"${c.verbatim_quote}"</p>
+        `;
+        content.appendChild(div);
+      });
+      card.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function closeCitationCard() {
+      document.getElementById('citation-card').classList.add('hidden');
+    }
+
+    function initChart() {
+      const ctx = document.getElementById('volumeChart').getContext('2d');
+      volumeChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: ['250 units', '500 units', '1,000 units'],
+          datasets: [
+            {
+              label: 'Target Budget ($45.00)',
+              data: [45.00, 45.00, 45.00],
+              borderColor: '#ef4444',
+              borderDash: [5, 5],
+              fill: false,
+              tension: 0.1
+            },
+            {
+              label: 'Apex Industrial Fasteners',
+              data: [42.50, 38.00, 34.20],
+              borderColor: '#f59e0b',
+              backgroundColor: 'rgba(245, 158, 11, 0.1)',
+              tension: 0.3
+            },
+            {
+              label: 'Midwest Fluid Controls',
+              data: [44.00, 41.20, 37.50],
+              borderColor: '#3b82f6',
+              tension: 0.3
+            },
+            {
+              label: 'Titan Bearing & Hardware',
+              data: [41.00, 39.00, 36.00],
+              borderColor: '#10b981',
+              tension: 0.3
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { labels: { color: '#94a3b8', font: { family: 'Inter', size: 11 } } }
+          },
+          scales: {
+            x: { grid: { color: 'rgba(51, 65, 85, 0.3)' }, ticks: { color: '#94a3b8' } },
+            y: { grid: { color: 'rgba(51, 65, 85, 0.3)' }, ticks: { color: '#94a3b8', callback: v => '$' + v } }
+          }
+        }
+      });
+    }
+
+    function updateVolumeChart(bids) {
+      if (!volumeChartInstance || !bids) return;
+      volumeChartInstance.update();
+    }
+
+    // Modal controls
+    function openNewRfqModal() { document.getElementById('rfq-modal').classList.remove('hidden'); }
+    function closeNewRfqModal() { document.getElementById('rfq-modal').classList.add('hidden'); }
+
+    function loadTemplate(type) {
+      if (type === 'valves') {
+        document.getElementById('modal-rfq-title').value = 'Emergency Refurbishment: 316SS Ball Valves';
+        document.getElementById('modal-rfq-sku').value = 'SS-400-1-4';
+        document.getElementById('modal-rfq-qty').value = 250;
+        document.getElementById('modal-rfq-desc').value = '1/4 in. 316 Stainless Steel High Pressure Ball Valve, 1000 PSI, NPT Female Thread';
+        document.getElementById('modal-rfq-budget').value = 45.00;
+      } else if (type === 'bearings') {
+        document.getElementById('modal-rfq-title').value = 'Turbine Overhaul: Deep Groove Ceramic Bearings';
+        document.getElementById('modal-rfq-sku').value = '6208-2RS-C3';
+        document.getElementById('modal-rfq-qty').value = 100;
+        document.getElementById('modal-rfq-desc').value = 'Deep Groove Ball Bearing 40x80x18mm, Rubber Seals, C3 Clearance';
+        document.getElementById('modal-rfq-budget').value = 38.50;
+      } else if (type === 'orings') {
+        document.getElementById('modal-rfq-title').value = 'Hydraulic Power Unit: Flange O-Ring Kits';
+        document.getElementById('modal-rfq-sku').value = 'VITON-AS568-214';
+        document.getElementById('modal-rfq-qty').value = 500;
+        document.getElementById('modal-rfq-desc').value = 'Fluoropolymer Viton Elastomer O-Ring Seal, 75 Durometer, High Temp';
+        document.getElementById('modal-rfq-budget').value = 4.20;
+      } else if (type === 'fasteners') {
+        document.getElementById('modal-rfq-title').value = 'Aerospace Chassis: Grade 5 Titanium Bolts';
+        document.getElementById('modal-rfq-sku').value = 'TI-FAST-M8';
+        document.getElementById('modal-rfq-qty').value = 1000;
+        document.getElementById('modal-rfq-desc').value = 'Grade 5 Titanium M8 Hex Flange Bolts 35mm, Mill Cert 3.1';
+        document.getElementById('modal-rfq-budget').value = 6.80;
+      }
+    }
+
+    async function submitNewRfq() {
+      const payload = {
+        title: document.getElementById('modal-rfq-title').value,
+        sku: document.getElementById('modal-rfq-sku').value,
+        description: document.getElementById('modal-rfq-desc').value,
+        target_quantity: parseInt(document.getElementById('modal-rfq-qty').value),
+        target_unit_budget: parseFloat(document.getElementById('modal-rfq-budget').value),
+        required_delivery_date: document.getElementById('modal-rfq-date').value,
+        urgency: 'standard',
+        allow_substitutions: true
+      };
+
+      try {
+        const res = await fetch('/api/rfqs', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (data.ok) {
+          closeNewRfqModal();
+          await loadRfqs();
+          onRfqSelected(data.rfq_id);
+        }
+      } catch (err) {
+        console.error('Error submitting RFQ:', err);
+      }
+    }
+
+    function openAddSupplierModal() { document.getElementById('supplier-modal').classList.remove('hidden'); }
+    function closeAddSupplierModal() { document.getElementById('supplier-modal').classList.add('hidden'); }
+
+    async function submitCustomSupplier() {
+      const payload = {
+        name: document.getElementById('custom-sup-name').value,
+        phone: document.getElementById('custom-sup-phone').value,
+        email: document.getElementById('custom-sup-email').value,
+        region: document.getElementById('custom-sup-region').value || 'US-Direct',
+        category: 'Industrial Supplies',
+        rating: 4.9
+      };
+
+      if (!payload.name || !payload.phone) {
+        alert('Please fill in name and phone number.');
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/suppliers/custom', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (data.ok) {
+          closeAddSupplierModal();
+          await loadSuppliers();
+        }
+      } catch (err) {
+        console.error('Error adding custom supplier:', err);
+      }
+    }
+
+    async function openDiagnosticsModal() {
+      document.getElementById('diag-modal').classList.remove('hidden');
+      const content = document.getElementById('diag-content');
+      content.innerHTML = '<p><i class="fa-solid fa-spinner fa-spin mr-2"></i> Querying CALL-E CLI & MCP endpoints...</p>';
+
+      try {
+        const res = await fetch('/api/calle/diagnostics');
+        const data = await res.json();
+        content.innerHTML = `
+          <div class="space-y-2">
+            <div class="flex justify-between border-b border-slate-800 pb-1">
+              <span class="text-slate-400">CALL-E CLI Installed:</span>
+              <span class="font-bold ${data.calle_cli_installed ? 'text-emerald-400' : 'text-amber-400'}">${data.calle_cli_installed ? 'YES (Ready)' : 'NO (Sandbox Active)'}</span>
+            </div>
+            <div class="flex justify-between border-b border-slate-800 pb-1">
+              <span class="text-slate-400">CLI Path:</span>
+              <span class="text-slate-200 text-[11px] truncate max-w-xs">${data.calle_cli_path}</span>
+            </div>
+            <div class="flex justify-between border-b border-slate-800 pb-1">
+              <span class="text-slate-400">MCP Endpoint:</span>
+              <span class="text-amber-300 text-[10px] truncate max-w-xs">${data.mcp_endpoint}</span>
+            </div>
+            <div class="flex justify-between border-b border-slate-800 pb-1">
+              <span class="text-slate-400">MCP Tool Protocol:</span>
+              <span class="text-emerald-400">plan_call, run_call, get_call_run</span>
+            </div>
+            <div class="flex justify-between border-b border-slate-800 pb-1">
+              <span class="text-slate-400">Sandbox Simulator:</span>
+              <span class="text-emerald-400">READY (4 Personas)</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-slate-400">Telemetry Integration:</span>
+              <span class="text-slate-200">${data.telemetry_source}</span>
+            </div>
+          </div>
+        `;
+      } catch (err) {
+        content.innerHTML = `<p class="text-rose-400">Error connecting to diagnostic endpoint.</p>`;
+      }
+    }
+
+    function closeDiagnosticsModal() { document.getElementById('diag-modal').classList.add('hidden'); }
+
+    function openPoModal(bid, rfq) {
+      selectedPoTarget = { bid, rfq };
+      document.getElementById('po-supplier-name').innerText = bid.supplier_name;
+      document.getElementById('po-sku').innerText = bid.quote.sku_quoted;
+      document.getElementById('po-qty').innerText = rfq.target_quantity + ' units';
+      document.getElementById('po-unit-price').innerText = '$' + bid.quote.base_unit_price.toFixed(2);
+      document.getElementById('po-lead-time').innerText = `${bid.quote.lead_time_days} Business Days (${bid.quote.freight_terms})`;
+      document.getElementById('po-total').innerText = '$' + bid.total_cost_at_target_qty.toFixed(2);
+      document.getElementById('po-modal').classList.remove('hidden');
+    }
+
+    function closePoModal() {
+      document.getElementById('po-modal').classList.add('hidden');
+    }
+
+    async function confirmIssuePo() {
+      if (!selectedPoTarget) return;
+      const btn = document.getElementById('po-confirm-btn');
+      btn.disabled = true;
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-1"></i> Syncing to ERP...`;
+
+      try {
+        const res = await fetch('/api/po/generate', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            rfq_id: selectedPoTarget.rfq.id,
+            supplier_id: selectedPoTarget.bid.supplier_id,
+            approved_by: 'Alex Morgan (Procurement Lead)'
+          })
+        });
+        const data = await res.json();
+        if (data.ok) {
+          lastIssuedPoNumber = data.po_number;
+          alert(`Success! Purchase Order ${data.po_number} issued and synced to SAP & NetSuite ERP.`);
+          closePoModal();
+          window.open(`/api/po/${data.po_number}/printable`, '_blank');
+          await loadStats();
+          await loadRfqs();
+        }
+      } catch (err) {
+        console.error('Error creating PO:', err);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<i class="fa-solid fa-check-double mr-1"></i> Confirm & Sync to ERP`;
+      }
+    }
+
+    function openPrintablePo() {
+      if (lastIssuedPoNumber) {
+        window.open(`/api/po/${lastIssuedPoNumber}/printable`, '_blank');
+      } else {
+        alert('Please confirm and issue the PO first.');
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,54 @@
+﻿# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Environments & Virtual Envs
+venv/
+env/
+.env
+.env.*
+*.env
+
+# Testing & Cache
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# Local Databases & State
+*.db
+*.sqlite3
+*.log
+
+# Sensitive Research & Unpublished Materials
+research/
+papers/
+drafts/
+notes/
+scratch/
+docs/internal/
+*.pdf
+*.docx
+*.pptx
+*.key
+*.ipynb
+
+# Raw Experimental / Proprietary Lab Data
+*.csv
+*.parquet
+*.h5
+*.hdf5
+*.pkl
+*.pickle
+*.mat
+*.npy
+*.npz
+raw_data/
+lab_data/
+
+# OS Specific
+.DS_Store
+Thumbs.db
+desktop.ini

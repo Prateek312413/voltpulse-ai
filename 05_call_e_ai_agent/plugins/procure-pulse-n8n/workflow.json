@@ -1,0 +1,97 @@
+{
+  "name": "ProcurePulse AI - Autonomous Supplier RFQ & Negotiation with CALL-E",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "procurepulse-rfq-trigger",
+        "options": {}
+      },
+      "name": "ERP RFQ Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:8000/api/calls/dispatch",
+        "method": "POST",
+        "bodyParametersUi": {
+          "parameter": [
+            {
+              "name": "rfq_id",
+              "value": "={{$json.body.rfq_id}}"
+            },
+            {
+              "name": "supplier_ids",
+              "value": "={{['sup-apex', 'sup-midwest', 'sup-titan', 'sup-precision']}}"
+            },
+            {
+              "name": "mode",
+              "value": "={{$json.body.mode || 'simulate'}}"
+            }
+          ]
+        }
+      },
+      "name": "ProcurePulse Wave Dispatcher",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [480, 300]
+    },
+    {
+      "parameters": {
+        "url": "=http://localhost:8000/api/quotes/compare/{{$json.rfq_id}}",
+        "method": "GET"
+      },
+      "name": "Get Ranked Quotes (MCDA)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [720, 300]
+    },
+    {
+      "parameters": {
+        "channel": "procurement-alerts",
+        "text": "=🚀 *ProcurePulse Quote Analysis Complete for RFQ {{$json.rfq.id}}*\n*Part:* {{$json.rfq.sku}} ({{$json.rfq.target_quantity}} units)\n*Recommended Winning Bid:* {{$json.recommended_bid.supplier_name}}\n*Negotiated Unit Price:* ${{$json.recommended_bid.quote.base_unit_price}} (Savings: ${{$json.recommended_bid.potential_savings}})\n*Lead Time:* {{$json.recommended_bid.quote.lead_time_days}} days\n\nClick to review evidence and confirm PO in Workbench."
+      },
+      "name": "Slack Purchasing Alert",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 1,
+      "position": [950, 300]
+    }
+  ],
+  "connections": {
+    "ERP RFQ Trigger": {
+      "main": [
+        [
+          {
+            "node": "ProcurePulse Wave Dispatcher",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ProcurePulse Wave Dispatcher": {
+      "main": [
+        [
+          {
+            "node": "Get Ranked Quotes (MCDA)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Ranked Quotes (MCDA)": {
+      "main": [
+        [
+          {
+            "node": "Slack Purchasing Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}
