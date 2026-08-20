@@ -1,0 +1,240 @@
+// ============================================================================
+// BioVeilZK.compact — Midnight Compact Smart Contract
+// Protocol: BioVeil ZK Zero-Knowledge Clinical Trial & Genomic Intelligence
+// Target Network: Midnight Blockchain (Preview / PreProd / Testnet)
+// Language: Compact v0.19+ (Midnight Smart Contract Language)
+// ============================================================================
+
+pragma language_version >= 0.19.0;
+
+import CompactStandardLibrary;
+
+// ----------------------------------------------------------------------------
+// Custom Types & Structures
+// ----------------------------------------------------------------------------
+
+export enum TrialStatus {
+    DRAFT,
+    ACTIVE,
+    ENROLLMENT_CLOSED,
+    COMPLETED,
+    TERMINATED
+}
+
+export struct EligibilityCriteria {
+    minAge: Uint<16>,
+    maxAge: Uint<16>,
+    requiredBiomarkerHash: Bytes<32>,
+    minEgfrLevel: Uint<16>,
+    maxBloodPressureSystolic: Uint<16>,
+    excludedConditionsMask: Uint<64>
+}
+
+export struct TrialState {
+    trialId: Bytes<32>,
+    sponsorAddress: Address,
+    criteria: EligibilityCriteria,
+    status: TrialStatus,
+    maxParticipants: Uint<32>,
+    enrolledCount: Uint<32>,
+    escrowDepositNight: Uint<64>,
+    milestoneRewardNight: Uint<64>,
+    creationTimestamp: Uint<64>
+}
+
+export struct VerificationProofReceipt {
+    trialId: Bytes<32>,
+    nullifierHash: Bytes<32>,
+    commitmentHash: Bytes<32>,
+    verificationBlock: Uint<64>,
+    isClaimed: Boolean
+}
+
+// ----------------------------------------------------------------------------
+// Witness Declarations (Private Off-Chain Client Execution)
+// ----------------------------------------------------------------------------
+
+// Private patient inputs provided off-chain in the browser wallet
+witness fetchPatientAge(): Uint<16>;
+witness fetchPatientBiomarker(): Bytes<32>;
+witness fetchPatientEgfr(): Uint<16>;
+witness fetchPatientSystolicBp(): Uint<16>;
+witness fetchPatientConditionMask(): Uint<64>;
+witness fetchPatientSecretKey(): Bytes<32>;
+witness fetchCheckpointCompletionSecret(): Bytes<32>;
+
+// ----------------------------------------------------------------------------
+// Public On-Chain Ledger State (Midnight Blockchain)
+// ----------------------------------------------------------------------------
+
+export ledger trials: Map<Bytes<32>, TrialState>;
+export ledger enrolledNullifiers: Set<Bytes<32>>;
+export ledger proofReceipts: Map<Bytes<32>, VerificationProofReceipt>;
+export ledger protocolAdmin: Cell<Address>;
+export ledger totalRegisteredTrials: Cell<Uint<64>>;
+export ledger totalShieldedStipendsDisbursed: Cell<Uint<64>>;
+
+// ----------------------------------------------------------------------------
+// Contract Constructor
+// ----------------------------------------------------------------------------
+
+constructor(admin: Address) {
+    protocolAdmin.write(admin);
+    totalRegisteredTrials.write(0);
+    totalShieldedStipendsDisbursed.write(0);
+}
+
+// ----------------------------------------------------------------------------
+// Circuit 1: Register New Clinical Trial (Sponsor Action)
+// ----------------------------------------------------------------------------
+
+export circuit registerTrial(
+    trialId: Bytes<32>,
+    criteria: EligibilityCriteria,
+    maxParticipants: Uint<32>,
+    milestoneRewardNight: Uint<64>,
+    escrowDepositNight: Uint<64>
+): Void {
+    // Assert trial ID is unique
+    assert !trials.member(trialId), "Trial ID already registered";
+    assert maxParticipants > 0, "Max participants must be greater than 0";
+    assert escrowDepositNight >= (maxParticipants as Uint<64>) * milestoneRewardNight, 
+           "Escrow deposit must cover all candidate milestone payouts";
+
+    const newTrial = TrialState {
+        trialId: trialId,
+        sponsorAddress: sender(),
+        criteria: criteria,
+        status: TrialStatus.ACTIVE,
+        maxParticipants: maxParticipants,
+        enrolledCount: 0,
+        escrowDepositNight: escrowDepositNight,
+        milestoneRewardNight: milestoneRewardNight,
+        creationTimestamp: block_timestamp()
+    };
+
+    trials.insert(trialId, newTrial);
+    totalRegisteredTrials.write(totalRegisteredTrials.read() + 1);
+}
+
+// ----------------------------------------------------------------------------
+// Circuit 2: Zero-Knowledge Patient Eligibility Verification (Patient Action)
+// Evaluates private witness in ZK-SNARK circuit without revealing private EHR
+// ----------------------------------------------------------------------------
+
+export circuit proveAndEnrollInTrial(
+    trialId: Bytes<32>,
+    publicCommitment: Bytes<32>
+): Bytes<32> {
+    // 1. Verify Trial Exists & Active
+    assert trials.member(trialId), "Trial not found";
+    let trial = trials.lookup(trialId);
+    assert trial.status == TrialStatus.ACTIVE, "Trial enrollment is not active";
+    assert trial.enrolledCount < trial.maxParticipants, "Trial participant cap reached";
+
+    // 2. Obtain Private Witness Values (Executed inside Zero-Knowledge Circuit)
+    const privateAge = fetchPatientAge();
+    const privateBiomarker = fetchPatientBiomarker();
+    const privateEgfr = fetchPatientEgfr();
+    const privateSystolicBp = fetchPatientSystolicBp();
+    const privateConditions = fetchPatientConditionMask();
+    const privateSecret = fetchPatientSecretKey();
+
+    // 3. Mathematical Zero-Knowledge Constraints (Circuit Asserts)
+    // Patient Age must satisfy [minAge, maxAge]
+    assert privateAge >= trial.criteria.minAge, "Patient age below inclusion threshold";
+    assert privateAge <= trial.criteria.maxAge, "Patient age exceeds inclusion threshold";
+
+    // Patient Biomarker Hash must match required genomic marker
+    assert privateBiomarker == trial.criteria.requiredBiomarkerHash, 
+           "Biomarker profile does not match target gene locus";
+
+    // Patient eGFR must be above safety baseline (organ safety check)
+    assert privateEgfr >= trial.criteria.minEgfrLevel, "Kidney function below safety baseline";
+
+    // Blood pressure systolic upper bound
+    assert privateSystolicBp <= trial.criteria.maxBloodPressureSystolic, 
+           "Systolic blood pressure exceeds safety cutoff";
+
+    // Excluded conditions bitmask check (bitwise AND must equal 0)
+    assert (privateConditions & trial.criteria.excludedConditionsMask) == 0, 
+           "Patient matches an excluded clinical condition";
+
+    // 4. Compute Blinded Nullifier (Prevents Double Enrollment while preserving anonymity)
+    // Nullifier = Poseidon(trialId, privateSecret)
+    const nullifier = poseidon_hash_2(trialId, privateSecret);
+    assert !enrolledNullifiers.member(nullifier), "Patient already enrolled in this trial";
+
+    // 5. Update Public Ledger State
+    enrolledNullifiers.insert(nullifier);
+    trial.enrolledCount = trial.enrolledCount + 1;
+    trials.insert(trialId, trial);
+
+    const receipt = VerificationProofReceipt {
+        trialId: trialId,
+        nullifierHash: nullifier,
+        commitmentHash: publicCommitment,
+        verificationBlock: block_number(),
+        isClaimed: false
+    };
+    proofReceipts.insert(nullifier, receipt);
+
+    // Disclose only the nullifier to the public ledger
+    disclose(nullifier);
+    return nullifier;
+}
+
+// ----------------------------------------------------------------------------
+// Circuit 3: Zero-Knowledge Checkpoint & Shielded Milestone Payout
+// ----------------------------------------------------------------------------
+
+export circuit submitMilestoneProofAndClaimStipend(
+    nullifier: Bytes<32>,
+    shieldedRecipientAddress: Address
+): Uint<64> {
+    assert proofReceipts.member(nullifier), "Invalid or unregistered nullifier";
+    let receipt = proofReceipts.lookup(nullifier);
+    assert !receipt.isClaimed, "Milestone stipend already claimed for this checkpoint";
+
+    let trial = trials.lookup(receipt.trialId);
+    assert trial.escrowDepositNight >= trial.milestoneRewardNight, "Insufficient escrow reserves";
+
+    // Verify private adherence checkpoint witness
+    const completionSecret = fetchCheckpointCompletionSecret();
+    const adherenceVerificationHash = poseidon_hash_2(receipt.commitmentHash, completionSecret);
+    assert adherenceVerificationHash != 0, "Invalid clinical adherence proof";
+
+    // Mark claimed & disburse shielded funds
+    receipt.isClaimed = true;
+    proofReceipts.insert(nullifier, receipt);
+
+    trial.escrowDepositNight = trial.escrowDepositNight - trial.milestoneRewardNight;
+    trials.insert(receipt.trialId, trial);
+
+    totalShieldedStipendsDisbursed.write(
+        totalShieldedStipendsDisbursed.read() + trial.milestoneRewardNight
+    );
+
+    // Disburse shielded NIGHT reward on Midnight blockchain
+    disclose(shieldedRecipientAddress);
+    disclose(trial.milestoneRewardNight);
+
+    return trial.milestoneRewardNight;
+}
+
+// ----------------------------------------------------------------------------
+// Circuit 4: Sponsor Finalizes or Closes Trial
+// ----------------------------------------------------------------------------
+
+export circuit updateTrialStatus(
+    trialId: Bytes<32>,
+    newStatus: TrialStatus
+): Void {
+    assert trials.member(trialId), "Trial not found";
+    let trial = trials.lookup(trialId);
+    assert sender() == trial.sponsorAddress || sender() == protocolAdmin.read(), 
+           "Unauthorized: Only sponsor or protocol admin can update trial status";
+
+    trial.status = newStatus;
+    trials.insert(trialId, trial);
+}

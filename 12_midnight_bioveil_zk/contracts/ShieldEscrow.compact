@@ -1,0 +1,114 @@
+// ============================================================================
+// ShieldEscrow.compact — Midnight Shielded Milestone Escrow Contract
+// Protocol: BioVeil ZK
+// Network: Midnight Blockchain
+// Language: Compact v0.19+
+// ============================================================================
+
+pragma language_version >= 0.19.0;
+
+import CompactStandardLibrary;
+
+export struct EscrowVault {
+    vaultId: Bytes<32>,
+    sponsor: Address,
+    totalDepositedNight: Uint<64>,
+    totalAllocatedDust: Uint<64>,
+    disbursedNight: Uint<64>,
+    activeMilestones: Uint<32>,
+    isLocked: Boolean
+}
+
+export struct MilestoneCheckpoint {
+    checkpointId: Bytes<32>,
+    vaultId: Bytes<32>,
+    requiredVerificationHash: Bytes<32>,
+    payoutAmountNight: Uint<64>,
+    payoutDeadlineBlock: Uint<64>,
+    isCompleted: Boolean
+}
+
+export ledger vaults: Map<Bytes<32>, EscrowVault>;
+export ledger checkpoints: Map<Bytes<32>, MilestoneCheckpoint>;
+export ledger totalEscrowLocked: Cell<Uint<64>>;
+
+constructor() {
+    totalEscrowLocked.write(0);
+}
+
+export circuit createEscrowVault(
+    vaultId: Bytes<32>,
+    depositNight: Uint<64>,
+    dustGasAllowance: Uint<64>
+): Void {
+    assert !vaults.member(vaultId), "Escrow vault ID already exists";
+    assert depositNight > 0, "Deposit must be greater than zero";
+
+    const vault = EscrowVault {
+        vaultId: vaultId,
+        sponsor: sender(),
+        totalDepositedNight: depositNight,
+        totalAllocatedDust: dustGasAllowance,
+        disbursedNight: 0,
+        activeMilestones: 0,
+        isLocked: false
+    };
+
+    vaults.insert(vaultId, vault);
+    totalEscrowLocked.write(totalEscrowLocked.read() + depositNight);
+}
+
+export circuit registerMilestone(
+    checkpointId: Bytes<32>,
+    vaultId: Bytes<32>,
+    verificationHash: Bytes<32>,
+    payoutAmount: Uint<64>,
+    deadlineBlock: Uint<64>
+): Void {
+    assert vaults.member(vaultId), "Vault not found";
+    let vault = vaults.lookup(vaultId);
+    assert sender() == vault.sponsor, "Only sponsor can register milestones";
+    assert (vault.totalDepositedNight - vault.disbursedNight) >= payoutAmount, "Insufficient vault balance";
+
+    const checkpoint = MilestoneCheckpoint {
+        checkpointId: checkpointId,
+        vaultId: vaultId,
+        requiredVerificationHash: verificationHash,
+        payoutAmountNight: payoutAmount,
+        payoutDeadlineBlock: deadlineBlock,
+        isCompleted: false
+    };
+
+    checkpoints.insert(checkpointId, checkpoint);
+    vault.activeMilestones = vault.activeMilestones + 1;
+    vaults.insert(vaultId, vault);
+}
+
+export circuit executeShieldedPayout(
+    checkpointId: Bytes<32>,
+    recipientShieldedAddr: Address,
+    proofHash: Bytes<32>
+): Uint<64> {
+    assert checkpoints.member(checkpointId), "Checkpoint not found";
+    let cp = checkpoints.lookup(checkpointId);
+    assert !cp.isCompleted, "Checkpoint already claimed";
+    assert proofHash == cp.requiredVerificationHash, "Verification proof hash mismatch";
+    assert block_number() <= cp.payoutDeadlineBlock, "Checkpoint deadline expired";
+
+    let vault = vaults.lookup(cp.vaultId);
+    assert (vault.totalDepositedNight - vault.disbursedNight) >= cp.payoutAmountNight, "Insufficient vault funds";
+
+    cp.isCompleted = true;
+    checkpoints.insert(checkpointId, cp);
+
+    vault.disbursedNight = vault.disbursedNight + cp.payoutAmountNight;
+    vault.activeMilestones = vault.activeMilestones - 1;
+    vaults.insert(cp.vaultId, vault);
+
+    totalEscrowLocked.write(totalEscrowLocked.read() - cp.payoutAmountNight);
+
+    disclose(recipientShieldedAddr);
+    disclose(cp.payoutAmountNight);
+
+    return cp.payoutAmountNight;
+}

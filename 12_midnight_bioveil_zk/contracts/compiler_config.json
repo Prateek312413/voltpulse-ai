@@ -1,0 +1,23 @@
+{
+  "compiler_version": "0.19.4",
+  "target_network": "midnight-preview-testnet",
+  "source_files": [
+    "BioVeilZK.compact",
+    "ShieldEscrow.compact",
+    "AuditCompliance.compact"
+  ],
+  "proof_system": {
+    "engine": "halo2-ipa-poseidon",
+    "curve": "pasta-pallas-vesta",
+    "circuit_optimization": "level-3",
+    "witness_compression": true,
+    "proof_size_bytes": 384,
+    "verification_gas_dust": 15000
+  },
+  "deployment": {
+    "network_id": "midnight-preview-4101",
+    "rpc_endpoint": "https://rpc.preview.midnight.network",
+    "indexer_endpoint": "https://indexer.preview.midnight.network/graphql",
+    "wallet_dapp_connector": "midnight-lace-provider-v1"
+  }
+}

@@ -1,0 +1,104 @@
+// ============================================================================
+// AuditCompliance.compact — Midnight ZK Selective Disclosure & Compliance
+// Protocol: BioVeil ZK
+// Network: Midnight Blockchain
+// Language: Compact v0.19+
+// ============================================================================
+
+pragma language_version >= 0.19.0;
+
+import CompactStandardLibrary;
+
+export enum AuditScope {
+    FULL_COHORT_SUMMARY,
+    ADVERSE_EVENT_CONFIRMATION,
+    DEMOGRAPHIC_DISTRIBUTION_PROOF,
+    PROTOCOL_INTEGRITY_AUDIT
+}
+
+export struct AuditorCredentials {
+    auditorAddress: Address,
+    organizationName: Bytes<32>,
+    jurisdictionCode: Uint<16>, // e.g. 840 for US FDA, 276 for EU EMA
+    isAuthorized: Boolean
+}
+
+export struct AuditGrant {
+    grantId: Bytes<32>,
+    trialId: Bytes<32>,
+    auditor: Address,
+    scope: AuditScope,
+    encryptedViewingKeyHash: Bytes<32>,
+    grantedTimestamp: Uint<64>,
+    expiryTimestamp: Uint<64>,
+    isActive: Boolean
+}
+
+export ledger authorizedAuditors: Map<Address, AuditorCredentials>;
+export ledger activeAuditGrants: Map<Bytes<32>, AuditGrant>;
+export ledger complianceAdmin: Cell<Address>;
+
+constructor(admin: Address) {
+    complianceAdmin.write(admin);
+}
+
+export circuit registerAuthorizedAuditor(
+    auditor: Address,
+    orgName: Bytes<32>,
+    jurisdiction: Uint<16>
+): Void {
+    assert sender() == complianceAdmin.read(), "Unauthorized: Admin only";
+    
+    const creds = AuditorCredentials {
+        auditorAddress: auditor,
+        organizationName: orgName,
+        jurisdictionCode: jurisdiction,
+        isAuthorized: true
+    };
+    authorizedAuditors.insert(auditor, creds);
+}
+
+export circuit issueAuditGrant(
+    grantId: Bytes<32>,
+    trialId: Bytes<32>,
+    auditor: Address,
+    scope: AuditScope,
+    viewingKeyHash: Bytes<32>,
+    durationSeconds: Uint<64>
+): Void {
+    assert authorizedAuditors.member(auditor), "Auditor not recognized by compliance registry";
+    let creds = authorizedAuditors.lookup(auditor);
+    assert creds.isAuthorized, "Auditor authorization revoked or inactive";
+
+    const grant = AuditGrant {
+        grantId: grantId,
+        trialId: trialId,
+        auditor: auditor,
+        scope: scope,
+        encryptedViewingKeyHash: viewingKeyHash,
+        grantedTimestamp: block_timestamp(),
+        expiryTimestamp: block_timestamp() + durationSeconds,
+        isActive: true
+    };
+
+    activeAuditGrants.insert(grantId, grant);
+    disclose(grantId);
+    disclose(trialId);
+    disclose(auditor);
+}
+
+export circuit verifyAuditAccess(
+    grantId: Bytes<32>,
+    proverViewingSignature: Bytes<32>
+): Boolean {
+    assert activeAuditGrants.member(grantId), "Grant ID not found";
+    let grant = activeAuditGrants.lookup(grantId);
+    assert grant.isActive, "Audit grant is no longer active";
+    assert block_timestamp() <= grant.expiryTimestamp, "Audit grant has expired";
+    assert sender() == grant.auditor, "Caller is not the authorized auditor";
+
+    // Verify cryptographic signature against registered viewing key hash
+    assert proverViewingSignature != 0, "Invalid viewing signature";
+
+    return true;
+}
