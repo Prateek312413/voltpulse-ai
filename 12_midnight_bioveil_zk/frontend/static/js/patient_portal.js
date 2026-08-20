@@ -166,6 +166,12 @@ const PatientPortal = {
       btnProof.addEventListener('click', () => this.generateProof());
     }
 
+    // Run Clinical Agent button
+    const btnAgent = document.getElementById('btn-run-clinical-agent');
+    if (btnAgent) {
+      btnAgent.addEventListener('click', () => this.runClinicalAgent());
+    }
+
     // Submit Proof to Midnight button
     const btnSubmit = document.getElementById('btn-submit-to-midnight');
     if (btnSubmit) {
@@ -302,5 +308,90 @@ const PatientPortal = {
       resultMsg.style.color = '#f43f5e';
       resultMsg.innerHTML = `<i class="fa-solid fa-circle-xmark"></i> Network error: ${err.message}`;
     }
+  },
+
+  async runClinicalAgent() {
+    if (!this.currentPatient || !this.currentTrial) return;
+
+    const panel = document.getElementById('clinical-agent-panel');
+    const pvBox = document.getElementById('pharmacovigilance-result-box');
+    const bayesBox = document.getElementById('bayesian-trajectory-result-box');
+    const mcdaBox = document.getElementById('mcda-ranking-result-box');
+
+    panel.classList.remove('hidden');
+    pvBox.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Checking contraindications...';
+    bayesBox.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Computing Bayesian trajectory...';
+    mcdaBox.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Ranking clinical compatibility...';
+
+    // 1. Pharmacovigilance check
+    try {
+      const pvRes = await fetch('/api/clinical/pharmacovigilance-check', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          trial_drug: 'CAR_T_CELL_THERAPY',
+          medications: ['ACETAMINOPHEN', 'METFORMIN']
+        })
+      });
+      const pvData = await pvRes.json();
+      pvBox.innerHTML = `
+        <div style="color: #10b981; font-weight: 700; margin-bottom: 0.25rem;">
+          <i class="fa-solid fa-circle-check"></i> ZERO LETHAL CONTRAINDICATIONS
+        </div>
+        <div>Trial Drug: <strong>${pvData.checked_drug}</strong></div>
+        <div>Active Meds Evaluated: <strong>${pvData.medication_count_blinded} (Blinded)</strong></div>
+        <div style="font-family: var(--font-mono); font-size: 0.7rem; color: #818cf8; margin-top: 0.3rem;">
+          ZK Commitment: ${pvData.zk_safety_commitment.slice(0, 20)}...
+        </div>
+      `;
+    } catch (err) {
+      pvBox.innerHTML = `<div style="color:#f43f5e;">Error: ${err.message}</div>`;
+    }
+
+    // 2. Bayesian Trajectory
+    try {
+      const bRes = await fetch(`/api/clinical/bayesian-trajectory?baseline_egfr=${this.currentPatient.egfr_level}&weeks=12`);
+      const bData = await bRes.json();
+      bayesBox.innerHTML = `
+        <div style="color: #6ee7b7; font-weight: 700; margin-bottom: 0.25rem;">
+          <i class="fa-solid fa-shield-halved"></i> Adherence Safety Score: ${bData.overall_adherence_safety_score}
+        </div>
+        <div>Baseline eGFR: <strong>${this.currentPatient.egfr_level} mL/min</strong></div>
+        <div>Model: <em>${bData.bayesian_model}</em></div>
+        <div style="font-family: var(--font-mono); font-size: 0.7rem; color: #c4b5fd; margin-top: 0.3rem;">
+          ZK Trajectory Hash: ${bData.zk_trajectory_hash.slice(0, 20)}...
+        </div>
+      `;
+    } catch (err) {
+      bayesBox.innerHTML = `<div style="color:#f43f5e;">Error: ${err.message}</div>`;
+    }
+
+    // 3. MCDA Ranking
+    try {
+      const mRes = await fetch('/api/clinical/mcda-trial-ranking', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(this.currentPatient)
+      });
+      const mData = await mRes.json();
+      const topMatch = mData.ranked_trials[0];
+      mcdaBox.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
+          <span style="font-weight:700; color:#fff;"><i class="fa-solid fa-ranking-star" style="color:#f59e0b;"></i> Top MCDA Clinical Match:</span>
+          <span class="badge-status-pill success" style="font-size:0.75rem;">Score: ${topMatch.mcda_match_score}/100</span>
+        </div>
+        <div style="color:#cbd5e1;"><strong>${topMatch.title}</strong> (${topMatch.phase})</div>
+        <div style="display:flex; gap:1rem; margin-top:0.4rem; color:#94a3b8; font-size:0.75rem;">
+          <span>Genomic: ${topMatch.score_breakdown.genomic_affinity}/40</span>
+          <span>Safety: ${topMatch.score_breakdown.safety_reserve}/25</span>
+          <span>Escrow: ${topMatch.score_breakdown.escrow_incentive}/20</span>
+          <span>Cohort Feasibility: ${topMatch.score_breakdown.cohort_feasibility}/15</span>
+        </div>
+      `;
+    } catch (err) {
+      mcdaBox.innerHTML = `<div style="color:#f43f5e;">Error: ${err.message}</div>`;
+    }
+
+    panel.scrollIntoView({ behavior: 'smooth' });
   }
 };

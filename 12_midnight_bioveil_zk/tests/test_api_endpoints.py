@@ -80,3 +80,50 @@ def test_get_compact_source_files():
     assert "BioVeilZK.compact" in sources
     assert "ShieldEscrow.compact" in sources
     assert "AuditCompliance.compact" in sources
+
+
+def test_pharmacovigilance_check_safe():
+    payload = {
+        "trial_drug": "CAR_T_CELL_THERAPY",
+        "medications": ["ACETAMINOPHEN", "METFORMIN"]
+    }
+    res = client.post("/api/clinical/pharmacovigilance-check", json=payload)
+    assert res.status_code == 200
+    data = res.json()
+    assert data["is_safe"] is True
+    assert len(data["warnings"]) == 0
+    assert data["zk_safety_commitment"].startswith("0x")
+
+
+def test_pharmacovigilance_check_contraindication():
+    payload = {
+        "trial_drug": "CAR_T_CELL_THERAPY",
+        "medications": ["HIGH_DOSE_SYSTEMIC_CORTICOSTEROIDS"]
+    }
+    res = client.post("/api/clinical/pharmacovigilance-check", json=payload)
+    assert res.status_code == 200
+    data = res.json()
+    assert data["is_safe"] is False
+    assert len(data["warnings"]) > 0
+
+
+def test_bayesian_biomarker_trajectory():
+    res = client.get("/api/clinical/bayesian-trajectory?baseline_egfr=92.0&weeks=12")
+    assert res.status_code == 200
+    data = res.json()
+    assert "trajectory_points" in data
+    assert len(data["trajectory_points"]) == 7
+    assert data["zk_trajectory_hash"].startswith("0x")
+
+
+def test_mcda_trial_ranking():
+    patients_res = client.get("/api/patients/samples")
+    patient = patients_res.json()["elena_vance_eligible_oncology"]
+    
+    res = client.post("/api/clinical/mcda-trial-ranking", json=patient)
+    assert res.status_code == 200
+    data = res.json()
+    assert len(data["ranked_trials"]) >= 4
+    # Oncology trial should be rank 1 for Elena Vance
+    assert data["ranked_trials"][0]["phase"] == "Phase IIb"
+

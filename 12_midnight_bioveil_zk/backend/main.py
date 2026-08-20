@@ -32,6 +32,11 @@ from backend.zk_engine import BioVeilZKProver, BioVeilZKVerifier, compute_biomar
 from backend.midnight_client import MidnightNetworkClient
 from backend.sample_data import get_sample_patients
 from backend.compliance_audit import ComplianceAuditManager
+from backend.clinical_agent import (
+    ClinicalPharmacovigilanceSentinel,
+    BayesianBiomarkerTrajectoryEngine,
+    MCDAClinicalTrialMatcher
+)
 
 # Base directory paths
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -96,8 +101,8 @@ async def background_block_miner():
             new_block = midnight_client.mine_synthetic_heartbeat_block()
             await ws_manager.broadcast({
                 "type": "NEW_MIDNIGHT_BLOCK",
-                "block": new_block.dict(),
-                "network_stats": midnight_client.get_network_stats().dict()
+                "block": new_block.model_dump(),
+                "network_stats": midnight_client.get_network_stats().model_dump()
             })
         except asyncio.CancelledError:
             break
@@ -291,6 +296,49 @@ async def claim_milestone(req: MilestoneClaimRequest):
 
 
 # -----------------------------------------------------------------------------
+# REST API Endpoints: Clinical Intelligence, Pharmacovigilance & Bayesian Models
+# -----------------------------------------------------------------------------
+
+@app.post("/api/clinical/pharmacovigilance-check")
+async def check_pharmacovigilance(payload: Dict[str, Any]):
+    trial_drug = payload.get("trial_drug", "CAR_T_CELL_THERAPY")
+    medications = payload.get("medications", [])
+    is_safe, warnings, commitment = ClinicalPharmacovigilanceSentinel.check_interaction_safety(
+        trial_drug=trial_drug,
+        patient_medications=medications
+    )
+    return {
+        "is_safe": is_safe,
+        "warnings": warnings,
+        "zk_safety_commitment": commitment,
+        "checked_drug": trial_drug,
+        "medication_count_blinded": len(medications)
+    }
+
+
+@app.get("/api/clinical/bayesian-trajectory")
+async def get_bayesian_trajectory(
+    baseline_egfr: float = Query(92.0, ge=10.0, le=150.0),
+    weeks: int = Query(12, ge=2, le=52)
+):
+    return BayesianBiomarkerTrajectoryEngine.forecast_checkpoint_adherence(
+        baseline_egfr=baseline_egfr,
+        weeks_in_trial=weeks
+    )
+
+
+@app.post("/api/clinical/mcda-trial-ranking")
+async def rank_trials_mcda(patient: PatientEHRProfile):
+    all_trials = midnight_client.get_all_trials()
+    ranked = MCDAClinicalTrialMatcher.rank_trials_for_patient(patient, all_trials)
+    return {
+        "patient_id": patient.patient_id,
+        "ranked_trials": ranked,
+        "scoring_methodology": "MCDA (Genomic 40% | Safety 25% | Escrow 20% | Feasibility 15%)"
+    }
+
+
+# -----------------------------------------------------------------------------
 # REST API Endpoints: Compliance & Auditor Viewing Keys
 # -----------------------------------------------------------------------------
 
@@ -352,8 +400,8 @@ async def websocket_blocks(websocket: WebSocket):
         # Send current network snapshot immediately
         await websocket.send_json({
             "type": "INITIAL_SNAPSHOT",
-            "network_stats": midnight_client.get_network_stats().dict(),
-            "latest_blocks": [b.dict() for b in midnight_client.blocks[-5:]]
+            "network_stats": midnight_client.get_network_stats().model_dump(),
+            "latest_blocks": [b.model_dump() for b in midnight_client.blocks[-5:]]
         })
         while True:
             # Keep socket alive

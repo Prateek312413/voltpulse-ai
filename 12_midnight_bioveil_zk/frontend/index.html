@@ -202,7 +202,44 @@
             <button id="btn-generate-zk-proof" class="btn btn-primary btn-lg pulse-glow">
               <i class="fa-solid fa-fingerprint"></i> Generate Off-Chain ZK-Proof
             </button>
+            <button id="btn-run-clinical-agent" class="btn btn-cyan btn-lg" style="margin-left:0.5rem;">
+              <i class="fa-solid fa-brain"></i> ZK Pharmacovigilance & Bayesian Check
+            </button>
           </div>
+        </div>
+      </div>
+
+      <!-- Clinical Intelligence & Pharmacovigilance Safety Sentinel -->
+      <div id="clinical-agent-panel" class="card glass-card mt-4 hidden">
+        <div class="card-header">
+          <div class="header-icon cyan"><i class="fa-solid fa-heart-pulse"></i></div>
+          <div class="header-title-flex">
+            <div>
+              <h3>ZK Pharmacovigilance Sentinel & Bayesian Trajectory Engine</h3>
+              <p>Multi-agent contraindication cross-examination & Gaussian Process adherence forecasting (±1.96σ bounds).</p>
+            </div>
+            <span class="live-pulse-badge" id="pharmacovigilance-status-badge"><span class="dot"></span> Evaluated</span>
+          </div>
+        </div>
+
+        <div class="grid-2-col">
+          <div class="ehr-details-panel">
+            <h5 style="color:#67e8f9; margin-bottom:0.4rem; font-size:0.9rem;"><i class="fa-solid fa-pills"></i> ZK Drug Interaction Check</h5>
+            <div id="pharmacovigilance-result-box" style="font-size:0.82rem; color:#cbd5e1;">
+              <!-- Populated via JavaScript -->
+            </div>
+          </div>
+
+          <div class="ehr-details-panel">
+            <h5 style="color:#10b981; margin-bottom:0.4rem; font-size:0.9rem;"><i class="fa-solid fa-chart-line"></i> Bayesian Renal Drift Forecast (GPR ±1.96σ)</h5>
+            <div id="bayesian-trajectory-result-box" style="font-size:0.82rem; color:#cbd5e1;">
+              <!-- Populated via JavaScript -->
+            </div>
+          </div>
+        </div>
+
+        <div id="mcda-ranking-result-box" class="mt-3" style="background:rgba(7,9,19,0.7); border:1px solid var(--border-subtle); border-radius:8px; padding:0.75rem; font-size:0.8rem;">
+          <!-- Populated via JavaScript -->
         </div>
       </div>
 
