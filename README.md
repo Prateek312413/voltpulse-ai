@@ -102,6 +102,7 @@ pytest tests/ -v
 ├── 04_volthacks_2026/              <-- VoltPulse AI: VoltHacks 2026 1st Place Submission
 ├── 07_neuralsprint_2026/           <-- NeuroAccess AI: NeuralSprint Submission
 ├── 08_hacksocial_2026/             <-- ResilioNet AI: HackSocial Submission
+├── 11_proof_of_possible_2026/      <-- EvidenceMesh: Proof of Possible 2026 Submission
 ├── aegismed/                       <-- Core AegisMed Application Package
 │   ├── agents/                     <-- Triage, Diagnostic, Pharma, Reflection, Swarm Orchestrator
 │   ├── database/                   <-- CockroachDB Models, Migrations, Connection Pool

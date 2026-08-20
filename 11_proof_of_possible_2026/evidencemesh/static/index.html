@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EvidenceMesh — Autonomous Causal Verification & Cryptographic Proof Engine</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0fdf4',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            900: '#14532d',
+                        },
+                        dark: {
+                            900: '#0b0f19',
+                            800: '#111827',
+                            700: '#1f2937',
+                            600: '#374151'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .glass-panel {
+            background: rgba(17, 24, 39, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .glow-green {
+            box-shadow: 0 0 25px rgba(34, 197, 94, 0.25);
+        }
+        .glow-red {
+            box-shadow: 0 0 25px rgba(239, 68, 68, 0.25);
+        }
+        .glow-cyan {
+            box-shadow: 0 0 25px rgba(6, 182, 212, 0.25);
+        }
+        @keyframes pulse-slow {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .animate-pulse-slow {
+            animation: pulse-slow 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+    </style>
+</head>
+<body class="bg-dark-900 text-slate-100 min-h-screen flex flex-col font-sans selection:bg-brand-500 selection:text-white">
+
+    <!-- Top Navigation -->
+    <header class="border-b border-dark-700 glass-panel sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 to-cyan-500 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-emerald-500/20">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <div>
+                    <div class="flex items-center space-x-2">
+                        <span class="font-bold text-lg text-white tracking-wide">EvidenceMesh</span>
+                        <span class="text-xs px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-400 border border-emerald-800 font-mono">v1.0.0</span>
+                    </div>
+                    <p class="text-xs text-slate-400">Autonomous Causal Verification & Cryptographic Proof Engine</p>
+                </div>
+            </div>
+
+            <!-- Hackathon Tag & Links -->
+            <div class="flex items-center space-x-4">
+                <div class="hidden md:flex items-center space-x-2 text-xs px-3 py-1.5 rounded-lg bg-dark-800 border border-dark-600">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                    <span class="text-slate-300 font-medium">Proof of Possible 2026</span>
+                    <span class="text-slate-500">|</span>
+                    <span class="text-emerald-400 italic">"Don’t pitch the future. Build evidence."</span>
+                </div>
+                <button onclick="runVerification()" class="px-4 py-2 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-semibold text-sm shadow-md shadow-emerald-600/30 transition flex items-center space-x-2">
+                    <i class="fa-solid fa-bolt"></i>
+                    <span>Verify Claims</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+        <!-- Scenarios & Input Section -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+            <!-- Scenario Quick Picker (Left Column) -->
+            <div class="glass-panel rounded-2xl p-5 space-y-4">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-sm font-bold text-slate-200 uppercase tracking-wider flex items-center space-x-2">
+                        <i class="fa-solid fa-flask-vial text-emerald-400"></i>
+                        <span>Benchmark Scenarios</span>
+                    </h2>
+                    <span class="text-xs text-slate-400">One-Click Presets</span>
+                </div>
+
+                <div class="space-y-2.5" id="scenario-list">
+                    <!-- Scenario buttons inserted by JS -->
+                </div>
+
+                <div class="pt-2 border-t border-dark-700">
+                    <label class="text-xs text-slate-400 font-medium block mb-2">Prior Skepticism ($\beta$ Bias):</label>
+                    <div class="flex items-center space-x-3">
+                        <input id="prior-slider" type="range" min="0.1" max="0.9" step="0.05" value="0.5" class="w-full accent-emerald-500" oninput="updateSkepticismLabel(this.value)">
+                        <span id="skepticism-val" class="text-xs font-mono text-emerald-400 w-10 text-right">0.50</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Input & Assertion Editor (Middle & Right Column) -->
+            <div class="lg:col-span-2 glass-panel rounded-2xl p-5 flex flex-col justify-between space-y-4">
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <label class="text-sm font-bold text-slate-200 uppercase tracking-wider flex items-center space-x-2">
+                            <i class="fa-solid fa-pen-to-square text-cyan-400"></i>
+                            <span>Proposition / Scientific Assertion Payload</span>
+                        </label>
+                        <span class="text-xs text-slate-400" id="char-count">0 characters</span>
+                    </div>
+                    <textarea id="claim-input" rows="5" class="w-full bg-dark-900/90 border border-dark-600 rounded-xl p-3.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition font-mono leading-relaxed" placeholder="Enter scientific claims, clinical statements, energy density specs, or code audits to decompose, verify, and cryptographically certify..."></textarea>
+                </div>
+
+                <div class="flex flex-wrap items-center justify-between gap-3 pt-2">
+                    <div class="flex items-center space-x-4">
+                        <label class="flex items-center space-x-2 text-xs text-slate-300 cursor-pointer">
+                            <input id="redteam-toggle" type="checkbox" checked class="rounded bg-dark-800 border-dark-600 text-emerald-500 focus:ring-0">
+                            <span>Adversarial Red-Teaming (Cross-Examination)</span>
+                        </label>
+                        <select id="domain-select" class="bg-dark-900 border border-dark-600 text-xs rounded-lg px-2.5 py-1.5 text-slate-300 focus:outline-none focus:border-emerald-500 font-medium">
+                            <option value="general">Domain: General Multi-Disciplinary</option>
+                            <option value="biomedical">Domain: Biomedical & Clinical</option>
+                            <option value="energy">Domain: Clean Energy & Materials</option>
+                            <option value="ai_security">Domain: AI Systems & Security</option>
+                            <option value="esg">Domain: ESG & Climate Regulatory</option>
+                        </select>
+                    </div>
+
+                    <button id="verify-btn" onclick="runVerification()" class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-bold text-sm shadow-lg shadow-emerald-500/20 transition flex items-center space-x-2">
+                        <i class="fa-solid fa-play"></i>
+                        <span>Execute Multi-Agent Audit</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Verification Progress Indicator -->
+        <div id="progress-container" class="hidden glass-panel rounded-2xl p-4 space-y-2 border-emerald-500/30">
+            <div class="flex items-center justify-between text-xs">
+                <span id="progress-stage" class="font-bold text-emerald-400 uppercase tracking-wide flex items-center space-x-2">
+                    <i class="fa-solid fa-spinner fa-spin text-emerald-400"></i>
+                    <span id="stage-text">Decomposing Atomic Propositions...</span>
+                </span>
+                <span id="progress-pct" class="font-mono text-slate-400">25%</span>
+            </div>
+            <div class="w-full bg-dark-900 rounded-full h-2 overflow-hidden">
+                <div id="progress-bar" class="bg-gradient-to-r from-emerald-500 to-cyan-500 h-2 rounded-full transition-all duration-300" style="width: 25%"></div>
+            </div>
+        </div>
+
+        <!-- Macro Verdict & Calibration Metrics Row -->
+        <div id="metrics-row" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+            <!-- Verdict -->
+            <div class="glass-panel rounded-2xl p-4 flex flex-col justify-between">
+                <span class="text-xs text-slate-400 uppercase font-semibold">Macro Verdict</span>
+                <div id="metric-verdict" class="text-lg font-black text-emerald-400 mt-1">VERIFIED</div>
+                <span id="metric-claims-count" class="text-xs text-slate-500">3/3 claims grounded</span>
+            </div>
+            <!-- Calibrated Probability -->
+            <div class="glass-panel rounded-2xl p-4 flex flex-col justify-between">
+                <span class="text-xs text-slate-400 uppercase font-semibold">Bayesian Posterior</span>
+                <div id="metric-prob" class="text-2xl font-mono font-bold text-cyan-400 mt-1">94.2%</div>
+                <span class="text-xs text-slate-500">Posterior Mean $\mathbb{E}[\theta]$</span>
+            </div>
+            <!-- 95% Credible Interval -->
+            <div class="glass-panel rounded-2xl p-4 flex flex-col justify-between">
+                <span class="text-xs text-slate-400 uppercase font-semibold">95% Credible Interval</span>
+                <div id="metric-ci" class="text-sm font-mono font-bold text-slate-200 mt-1">[0.88, 0.98]</div>
+                <span class="text-xs text-slate-500">$\pm 1.96\sigma$ Epistemic Bounds</span>
+            </div>
+            <!-- Epistemic Risk -->
+            <div class="glass-panel rounded-2xl p-4 flex flex-col justify-between">
+                <span class="text-xs text-slate-400 uppercase font-semibold">Epistemic Risk</span>
+                <div id="metric-risk" class="text-lg font-black text-emerald-400 mt-1">LOW</div>
+                <span id="metric-contradictions" class="text-xs text-slate-500">0 contradictions</span>
+            </div>
+            <!-- Expected Calibration Error (ECE) -->
+            <div class="glass-panel rounded-2xl p-4 flex flex-col justify-between">
+                <span class="text-xs text-slate-400 uppercase font-semibold">Calibration Error</span>
+                <div id="metric-ece" class="text-2xl font-mono font-bold text-amber-400 mt-1">0.038</div>
+                <span class="text-xs text-slate-500">Expected (ECE Metric)</span>
+            </div>
+            <!-- Brier Score -->
+            <div class="glass-panel rounded-2xl p-4 flex flex-col justify-between">
+                <span class="text-xs text-slate-400 uppercase font-semibold">Brier Reliability</span>
+                <div id="metric-brier" class="text-2xl font-mono font-bold text-purple-400 mt-1">0.052</div>
+                <span class="text-xs text-slate-500">MSE Probabilistic Score</span>
+            </div>
+        </div>
+
+        <!-- Causal DAG Visualizer & Multi-Agent Trace -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+            <!-- Causal Graph DAG Canvas (7 cols) -->
+            <div class="lg:col-span-7 glass-panel rounded-2xl p-5 space-y-3 flex flex-col">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-sm font-bold text-slate-200 uppercase tracking-wider flex items-center space-x-2">
+                        <i class="fa-solid fa-diagram-project text-emerald-400"></i>
+                        <span>Causal Claim Dependency Graph (DAG)</span>
+                    </h3>
+                    <div class="flex items-center space-x-3 text-xs">
+                        <span class="flex items-center space-x-1"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span><span>Verified</span></span>
+                        <span class="flex items-center space-x-1"><span class="w-2.5 h-2.5 rounded-full bg-red-500 inline-block"></span><span>Refuted</span></span>
+                        <span class="flex items-center space-x-1"><span class="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block"></span><span>Contradicted</span></span>
+                    </div>
+                </div>
+
+                <div class="flex-1 bg-dark-900/90 rounded-xl border border-dark-700 min-h-[360px] relative overflow-hidden flex items-center justify-center">
+                    <canvas id="dag-canvas" class="w-full h-full cursor-crosshair"></canvas>
+                    <div id="dag-tooltip" class="absolute hidden bg-dark-800 border border-slate-600 rounded-lg p-2.5 text-xs text-slate-200 shadow-xl max-w-xs pointer-events-none z-10"></div>
+                </div>
+            </div>
+
+            <!-- Multi-Agent Audit Stream (5 cols) -->
+            <div class="lg:col-span-5 glass-panel rounded-2xl p-5 space-y-3 flex flex-col">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-sm font-bold text-slate-200 uppercase tracking-wider flex items-center space-x-2">
+                        <i class="fa-solid fa-robot text-teal-400"></i>
+                        <span>Multi-Agent Swarm Trace</span>
+                    </h3>
+                    <span class="text-xs px-2 py-0.5 rounded bg-dark-800 text-slate-400 font-mono" id="audit-exec-time">0 ms</span>
+                </div>
+
+                <div id="agent-timeline" class="flex-1 space-y-3 overflow-y-auto max-h-[360px] pr-1">
+                    <!-- Agent events populated here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Atomic Claims Breakdown Table -->
+        <div class="glass-panel rounded-2xl p-5 space-y-4">
+            <div class="flex items-center justify-between">
+                <h3 class="text-sm font-bold text-slate-200 uppercase tracking-wider flex items-center space-x-2">
+                    <i class="fa-solid fa-list-check text-cyan-400"></i>
+                    <span>Atomic Claims & Empirical Grounding Ledger</span>
+                </h3>
+                <span class="text-xs text-slate-400">Decomposed Propositions</span>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs border-collapse">
+                    <thead>
+                        <tr class="border-b border-dark-700 text-slate-400 font-semibold uppercase">
+                            <th class="py-2.5 px-3">ID</th>
+                            <th class="py-2.5 px-3">Type</th>
+                            <th class="py-2.5 px-3">Atomic Proposition</th>
+                            <th class="py-2.5 px-3">Status</th>
+                            <th class="py-2.5 px-3">Confidence</th>
+                            <th class="py-2.5 px-3">Grounding / Empirical Citations</th>
+                        </tr>
+                    </thead>
+                    <tbody id="claims-table-body" class="divide-y divide-dark-700 text-slate-300 font-mono">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Cryptographic Proof Certificate Box -->
+        <div class="glass-panel rounded-2xl p-6 border-emerald-500/30 glow-green space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-4">
+                <div class="flex items-center space-x-3">
+                    <div class="w-12 h-12 rounded-xl bg-emerald-950 border border-emerald-700 flex items-center justify-center text-emerald-400 text-2xl">
+                        <i class="fa-solid fa-certificate"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center space-x-2">
+                            <span class="font-bold text-base text-white">Cryptographic Proof Certificate</span>
+                            <span id="cert-badge" class="px-2 py-0.5 rounded text-[10px] font-mono bg-emerald-900/60 text-emerald-400 border border-emerald-700">VERIFIED AUTHENTIC</span>
+                        </div>
+                        <p class="text-xs text-slate-400 font-mono" id="cert-id">CERT-EM-INIT</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center space-x-3">
+                    <button onclick="verifyTamperIntegrity()" class="px-3.5 py-2 rounded-lg bg-dark-800 hover:bg-dark-700 border border-dark-600 text-xs font-semibold text-slate-300 transition flex items-center space-x-1.5">
+                        <i class="fa-solid fa-fingerprint text-emerald-400"></i>
+                        <span>Audit Merkle Integrity</span>
+                    </button>
+                    <button onclick="downloadProofJSON()" class="px-3.5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-xs font-bold text-white shadow-md transition flex items-center space-x-1.5">
+                        <i class="fa-solid fa-download"></i>
+                        <span>Export Proof JSON-LD</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 text-xs font-mono">
+                <div class="bg-dark-900/80 p-3 rounded-xl border border-dark-700 space-y-1">
+                    <span class="text-slate-500 block">SHA-256 Merkle Root:</span>
+                    <span id="cert-merkle-root" class="text-emerald-400 break-all select-all font-semibold">e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855</span>
+                </div>
+                <div class="bg-dark-900/80 p-3 rounded-xl border border-dark-700 space-y-1">
+                    <span class="text-slate-500 block">Audit Signature:</span>
+                    <span id="cert-signature" class="text-cyan-400 break-all select-all font-semibold">SIG-INIT-DEMO</span>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-dark-800 py-6 mt-12 text-center text-xs text-slate-500 glass-panel">
+        <div class="max-w-7xl mx-auto px-4 space-y-2">
+            <p><strong>EvidenceMesh</strong> — Built for <strong>Proof of Possible 2026 Devpost Hackathon</strong></p>
+            <p>Empirical Grounding • Causal DAG Reasoning • Bayesian Epistemic Calibration • Cryptographic Merkle Proofs</p>
+        </div>
+    </footer>
+
+    <!-- App JavaScript Logic -->
+    <script>
+        let currentResponse = null;
+        let scenarios = [];
+
+        // Fetch benchmark scenarios on load
+        window.addEventListener('DOMContentLoaded', async () => {
+            await loadScenarios();
+            // Select scenario 1 by default
+            if (scenarios.length > 0) {
+                selectScenario(scenarios[0].id);
+            }
+        });
+
+        async function loadScenarios() {
+            try {
+                const res = await fetch('/api/scenarios');
+                scenarios = await res.json();
+                const container = document.getElementById('scenario-list');
+                container.innerHTML = '';
+
+                scenarios.forEach((sc, idx) => {
+                    const btn = document.createElement('button');
+                    btn.className = 'w-full text-left p-2.5 rounded-xl bg-dark-900/70 hover:bg-dark-800 border border-dark-700 hover:border-emerald-500/50 transition group';
+                    btn.onclick = () => selectScenario(sc.id);
+                    btn.innerHTML = `
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold text-slate-200 group-hover:text-emerald-400 transition">${sc.title}</span>
+                            <span class="text-[10px] px-1.5 py-0.5 rounded bg-dark-800 text-slate-400 font-mono">${sc.category.split(' ')[0]}</span>
+                        </div>
+                        <p class="text-[11px] text-slate-400 mt-1 line-clamp-1">${sc.description}</p>
+                    `;
+                    container.appendChild(btn);
+                });
+            } catch (err) {
+                console.error('Failed to load scenarios', err);
+            }
+        }
+
+        function selectScenario(id) {
+            const sc = scenarios.find(s => s.id === id);
+            if (!sc) return;
+            document.getElementById('claim-input').value = sc.sample_text;
+            updateCharCount();
+            
+            // Set matching domain
+            if (id.includes('CLINICAL')) document.getElementById('domain-select').value = 'biomedical';
+            else if (id.includes('ENERGY')) document.getElementById('domain-select').value = 'energy';
+            else if (id.includes('AI')) document.getElementById('domain-select').value = 'ai_security';
+            else if (id.includes('ESG')) document.getElementById('domain-select').value = 'esg';
+            
+            runVerification();
+        }
+
+        function updateCharCount() {
+            const len = document.getElementById('claim-input').value.length;
+            document.getElementById('char-count').innerText = `${len} characters`;
+        }
+
+        document.getElementById('claim-input').addEventListener('input', updateCharCount);
+
+        function updateSkepticismLabel(val) {
+            document.getElementById('skepticism-val').innerText = parseFloat(val).toFixed(2);
+        }
+
+        async function runVerification() {
+            const text = document.getElementById('claim-input').value.trim();
+            if (!text) return;
+
+            const domain = document.getElementById('domain-select').value;
+            const priorSkepticism = parseFloat(document.getElementById('prior-slider').value);
+            const deepCrossExam = document.getElementById('redteam-toggle').checked;
+
+            // Show progress bar
+            const prog = document.getElementById('progress-container');
+            prog.classList.remove('hidden');
+            document.getElementById('progress-bar').style.width = '30%';
+            document.getElementById('stage-text').innerText = 'Decomposing Atomic Propositions...';
+
+            try {
+                setTimeout(() => {
+                    document.getElementById('progress-bar').style.width = '65%';
+                    document.getElementById('stage-text').innerText = 'Running Multi-Agent Adversarial Cross-Examination...';
+                }, 150);
+
+                const res = await fetch('/api/verify', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        text_content: text,
+                        domain: domain,
+                        prior_skepticism: priorSkepticism,
+                        deep_cross_examination: deepCrossExam
+                    })
+                });
+
+                document.getElementById('progress-bar').style.width = '100%';
+                document.getElementById('stage-text').innerText = 'Synthesizing Calibrated Proof Certificate...';
+
+                const data = await res.json();
+                currentResponse = data;
+
+                setTimeout(() => {
+                    prog.classList.add('hidden');
+                    renderResults(data);
+                }, 300);
+
+            } catch (err) {
+                console.error(err);
+                prog.classList.add('hidden');
+            }
+        }
+
+        function renderResults(data) {
+            // 1. Render Metrics
+            const verdictElem = document.getElementById('metric-verdict');
+            verdictElem.innerText = data.overall_status;
+            if (data.overall_status === 'VERIFIED') {
+                verdictElem.className = 'text-lg font-black text-emerald-400 mt-1';
+            } else if (data.overall_status === 'CONTRADICTED' || data.overall_status === 'REFUTED') {
+                verdictElem.className = 'text-lg font-black text-red-400 mt-1';
+            } else {
+                verdictElem.className = 'text-lg font-black text-amber-400 mt-1';
+            }
+
+            const verifiedCount = data.atomic_claims.filter(c => c.status === 'VERIFIED').length;
+            document.getElementById('metric-claims-count').innerText = `${verifiedCount}/${data.atomic_claims.length} claims grounded`;
+
+            document.getElementById('metric-prob').innerText = (data.calibrated_confidence * 100).toFixed(1) + '%';
+            document.getElementById('metric-ci').innerText = `[${data.calibration_metrics.credible_interval_low_95.toFixed(2)}, ${data.calibration_metrics.credible_interval_high_95.toFixed(2)}]`;
+            
+            const riskElem = document.getElementById('metric-risk');
+            riskElem.innerText = data.epistemic_risk;
+            if (data.epistemic_risk === 'LOW') riskElem.className = 'text-lg font-black text-emerald-400 mt-1';
+            else if (data.epistemic_risk === 'CRITICAL' || data.epistemic_risk === 'HIGH') riskElem.className = 'text-lg font-black text-red-400 mt-1';
+            else riskElem.className = 'text-lg font-black text-amber-400 mt-1';
+
+            document.getElementById('metric-contradictions').innerText = `${data.proof_certificate.contradiction_count} contradiction(s)`;
+            document.getElementById('metric-ece').innerText = data.calibration_metrics.expected_calibration_error.toFixed(3);
+            document.getElementById('metric-brier').innerText = data.calibration_metrics.brier_score.toFixed(3);
+
+            // 2. Render Timeline
+            const timeline = document.getElementById('agent-timeline');
+            timeline.innerHTML = '';
+            document.getElementById('audit-exec-time').innerText = `${data.execution_time_ms} ms`;
+
+            data.audit_trace.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'p-3 rounded-xl bg-dark-900/80 border border-dark-700 text-xs space-y-1';
+                div.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <span class="font-bold text-emerald-400">${item.agent}</span>
+                        <span class="text-[10px] text-slate-500 font-mono">${item.role}</span>
+                    </div>
+                    <p class="text-slate-300">${item.summary || JSON.stringify(item)}</p>
+                `;
+                timeline.appendChild(div);
+            });
+
+            // 3. Render Claims Table
+            const tbody = document.getElementById('claims-table-body');
+            tbody.innerHTML = '';
+            data.atomic_claims.forEach(c => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-dark-800/50 transition';
+
+                let statusBadge = '';
+                if (c.status === 'VERIFIED') statusBadge = '<span class="px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-800 text-[10px]">VERIFIED</span>';
+                else if (c.status === 'REFUTED') statusBadge = '<span class="px-2 py-0.5 rounded bg-red-950 text-red-400 border border-red-800 text-[10px]">REFUTED</span>';
+                else if (c.status === 'CONTRADICTED') statusBadge = '<span class="px-2 py-0.5 rounded bg-amber-950 text-amber-400 border border-amber-800 text-[10px]">CONTRADICTED</span>';
+                else statusBadge = '<span class="px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700 text-[10px]">UNCERTAIN</span>';
+
+                let citations = c.supporting_evidence.map(s => `<div class="text-[11px] text-cyan-400 font-sans">• ${s.title} (${s.doi_or_url || 'Verified'})</div>`).join('');
+                if (c.refuting_evidence && c.refuting_evidence.length > 0) {
+                    citations += c.refuting_evidence.map(s => `<div class="text-[11px] text-red-400 font-sans">• Refutation: ${s.snippet}</div>`).join('');
+                }
+                if (!citations) citations = `<span class="text-slate-500 text-[11px] font-sans">${c.explanation || 'No external citation'}</span>`;
+
+                tr.innerHTML = `
+                    <td class="py-2.5 px-3 font-bold text-slate-300">${c.claim_id}</td>
+                    <td class="py-2.5 px-3 text-slate-400 uppercase text-[10px]">${c.claim_type}</td>
+                    <td class="py-2.5 px-3 font-sans text-slate-200 max-w-xs">${c.text}</td>
+                    <td class="py-2.5 px-3">${statusBadge}</td>
+                    <td class="py-2.5 px-3 text-slate-300 font-mono">${(c.confidence_score * 100).toFixed(0)}%</td>
+                    <td class="py-2.5 px-3">${citations}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            // 4. Render Certificate Box
+            const cert = data.proof_certificate;
+            document.getElementById('cert-id').innerText = cert.certificate_id;
+            document.getElementById('cert-merkle-root').innerText = cert.merkle_root;
+            document.getElementById('cert-signature').innerText = cert.audit_signature;
+
+            // 5. Draw Causal DAG
+            drawDAG(data.atomic_claims, data.causal_edges);
+        }
+
+        function drawDAG(claims, edges) {
+            const canvas = document.getElementById('dag-canvas');
+            const ctx = canvas.getContext('2d');
+            const rect = canvas.parentElement.getBoundingClientRect();
+            canvas.width = rect.width;
+            canvas.height = rect.height;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            if (!claims || claims.length === 0) return;
+
+            const n = claims.length;
+            const nodePositions = {};
+            const padding = 60;
+            const spacing = (canvas.width - padding * 2) / Math.max(n - 1, 1);
+
+            claims.forEach((c, i) => {
+                const x = n === 1 ? canvas.width / 2 : padding + i * spacing;
+                const y = canvas.height / 2 + (i % 2 === 0 ? -30 : 30);
+                nodePositions[c.claim_id] = { x, y, claim: c };
+            });
+
+            // Draw Edges
+            edges.forEach(e => {
+                const src = nodePositions[e.source_id];
+                const dst = nodePositions[e.target_id];
+                if (!src || !dst) return;
+
+                ctx.beginPath();
+                ctx.moveTo(src.x, src.y);
+                ctx.lineTo(dst.x, dst.y);
+                if (e.relation_type === 'contradicts') {
+                    ctx.strokeStyle = '#ef4444';
+                    ctx.lineWidth = 2.5;
+                    ctx.setLineDash([5, 5]);
+                } else {
+                    ctx.strokeStyle = '#06b6d4';
+                    ctx.lineWidth = 1.8;
+                    ctx.setLineDash([]);
+                }
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                // Draw edge label
+                const midX = (src.x + dst.x) / 2;
+                const midY = (src.y + dst.y) / 2 - 8;
+                ctx.font = '10px monospace';
+                ctx.fillStyle = e.relation_type === 'contradicts' ? '#ef4444' : '#94a3b8';
+                ctx.fillText(e.relation_type, midX - 20, midY);
+            });
+
+            // Draw Nodes
+            claims.forEach(c => {
+                const pos = nodePositions[c.claim_id];
+                if (!pos) return;
+
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, 22, 0, Math.PI * 2);
+
+                if (c.status === 'VERIFIED') ctx.fillStyle = '#10b981';
+                else if (c.status === 'REFUTED') ctx.fillStyle = '#ef4444';
+                else if (c.status === 'CONTRADICTED') ctx.fillStyle = '#f59e0b';
+                else ctx.fillStyle = '#64748b';
+
+                ctx.shadowColor = ctx.fillStyle;
+                ctx.shadowBlur = 12;
+                ctx.fill();
+                ctx.shadowBlur = 0;
+
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                ctx.font = 'bold 11px sans-serif';
+                ctx.fillStyle = '#ffffff';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(c.claim_id, pos.x, pos.y);
+
+                // Subtitle text under node
+                ctx.font = '10px monospace';
+                ctx.fillStyle = '#cbd5e1';
+                ctx.fillText((c.confidence_score * 100).toFixed(0) + '%', pos.x, pos.y + 34);
+            });
+        }
+
+        async function verifyTamperIntegrity() {
+            if (!currentResponse) return;
+            const certId = currentResponse.proof_certificate.certificate_id;
+            const res = await fetch(`/api/proofs/${certId}/tamper-check`, { method: 'POST' });
+            const data = await res.json();
+            alert(`[Merkle Ledger Audit]:\nStatus: ${data.status}\nIntegrity: ${data.is_valid ? '100% Cryptographically Intact' : 'TAMPERED'}\nRoot: ${data.merkle_root}`);
+        }
+
+        function downloadProofJSON() {
+            if (!currentResponse) return;
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(currentResponse, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", `EvidenceMesh-Proof-${currentResponse.proof_certificate.certificate_id}.json`);
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
+    </script>
+</body>
+</html>

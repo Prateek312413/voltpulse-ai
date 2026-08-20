@@ -27,16 +27,18 @@ ENV/
 Thumbs.db
 
 # Unpublished Research Documents & Internal Engines (Protected)
-prd.md
-app/
-data/
-run.py
-battery_forecast_engine.db
-tests/test_12_edge_cases.py
-tests/test_gpr_engine.py
-tests/test_model_eval.py
-tests/test_reconciliation.py
-tests/test_replay.py
-tests/test_temporal.py
-tests/test_validation.py
-tests/verify_live.py
+/prd.md
+/app/
+/data/
+/run.py
+/run_aegismed.py
+/battery_forecast_engine.db
+/aegismed_memory.db
+/tests/test_12_edge_cases.py
+/tests/test_gpr_engine.py
+/tests/test_model_eval.py
+/tests/test_reconciliation.py
+/tests/test_replay.py
+/tests/test_temporal.py
+/tests/test_validation.py
+/tests/verify_live.py
