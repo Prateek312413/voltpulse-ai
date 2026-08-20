@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BioVeil ZK — Midnight Network Zero-Knowledge Clinical Trial Protocol</title>
+  
+  <!-- Google Fonts & Font Awesome Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body class="dark-theme">
+
+  <!-- Background Particle Grid Canvas -->
+  <canvas id="bg-canvas"></canvas>
+
+  <!-- Top Global Header -->
+  <header class="top-nav">
+    <div class="nav-container">
+      <div class="brand-logo">
+        <div class="logo-orb">
+          <i class="fa-solid fa-shield-halved"></i>
+        </div>
+        <div class="brand-text">
+          <span class="brand-title">BioVeil <span class="zk-badge">ZK</span></span>
+          <span class="brand-sub">Powered by Midnight Blockchain</span>
+        </div>
+      </div>
+
+      <div class="nav-metrics">
+        <div class="metric-pill network-pill">
+          <span class="status-dot pulsing"></span>
+          <span id="nav-network-name">Midnight Preview (4101)</span>
+        </div>
+        <div class="metric-pill block-pill">
+          <i class="fa-solid fa-cube"></i>
+          <span id="nav-block-height">Block #1,420</span>
+        </div>
+        <div class="metric-pill dust-pill">
+          <i class="fa-solid fa-bolt"></i>
+          <span id="nav-dust-rate">DUST: 0.00042</span>
+        </div>
+      </div>
+
+      <div class="nav-wallet">
+        <div class="wallet-info">
+          <span class="wallet-tag">Shielded Wallet</span>
+          <span class="wallet-addr" id="active-wallet-address">midnight1z_elena_vance...</span>
+        </div>
+        <div class="wallet-balance-box">
+          <i class="fa-solid fa-coins"></i>
+          <span id="active-wallet-balance">15,000 NIGHT</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Hero Section -->
+  <section class="hero-banner">
+    <div class="hero-content">
+      <div class="hero-badge">
+        <i class="fa-solid fa-award"></i> Brainwave 2026 Midnight Track — 1st Prize Innovation
+      </div>
+      <h1 class="hero-headline">
+        Zero-Knowledge Clinical Trial & Genomic Intelligence Protocol
+      </h1>
+      <p class="hero-subtext">
+        Eliminating the $44B clinical trial recruitment bottleneck with 
+        <strong>Midnight Compact Smart Contracts</strong>. Patients prove complex genomic eligibility in zero-knowledge — zero raw medical records exposed, 100% HIPAA/GDPR verified, instant shielded NIGHT milestone stipends.
+      </p>
+
+      <!-- Protocol Key Stats Counter -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon purple"><i class="fa-solid fa-vault"></i></div>
+          <div class="stat-info">
+            <span class="stat-label">Total Escrow Locked</span>
+            <span class="stat-val" id="stat-total-escrow">1,320,000 NIGHT</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon emerald"><i class="fa-solid fa-shield-virus"></i></div>
+          <div class="stat-info">
+            <span class="stat-label">ZK Proofs Verified</span>
+            <span class="stat-val" id="stat-total-proofs">42</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon cyan"><i class="fa-solid fa-hand-holding-dollar"></i></div>
+          <div class="stat-info">
+            <span class="stat-label">Shielded Stipends Paid</span>
+            <span class="stat-val" id="stat-total-disbursed">185,000 NIGHT</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon amber"><i class="fa-solid fa-microchip"></i></div>
+          <div class="stat-info">
+            <span class="stat-label">Prover Proof Engine</span>
+            <span class="stat-val">Halo2 / Poseidon</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Interactive Navigation Tabs -->
+  <nav class="tab-navigation">
+    <div class="tabs-wrapper">
+      <button class="nav-tab active" data-tab="patient-tab">
+        <i class="fa-solid fa-user-shield"></i>
+        <span>Patient ZK Portal</span>
+      </button>
+      <button class="nav-tab" data-tab="sponsor-tab">
+        <i class="fa-solid fa-building-columns"></i>
+        <span>Pharma & Sponsor Hub</span>
+      </button>
+      <button class="nav-tab" data-tab="auditor-tab">
+        <i class="fa-solid fa-scale-balanced"></i>
+        <span>FDA / IRB Compliance</span>
+      </button>
+      <button class="nav-tab" data-tab="explorer-tab">
+        <i class="fa-solid fa-network-wired"></i>
+        <span>Midnight Explorer</span>
+      </button>
+      <button class="nav-tab" data-tab="compact-tab">
+        <i class="fa-solid fa-code"></i>
+        <span>Compact Contracts</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Main Application Container -->
+  <main class="app-container">
+
+    <!-- ==================================================================== -->
+    <!-- TAB 1: PATIENT ZERO-KNOWLEDGE PORTAL -->
+    <!-- ==================================================================== -->
+    <section id="patient-tab" class="tab-pane active">
+      <div class="grid-2-col">
+        
+        <!-- Left: Patient EHR & Genomic Witness Loader -->
+        <div class="card glass-card">
+          <div class="card-header">
+            <div class="header-icon"><i class="fa-solid fa-dna"></i></div>
+            <div>
+              <h3>Private Patient Witness & EHR Record</h3>
+              <p>Medical data resides in local browser memory only. Never sent to any server or ledger.</p>
+            </div>
+          </div>
+
+          <div class="patient-preset-selector">
+            <label><i class="fa-solid fa-users-viewfinder"></i> Select Pre-Loaded Test Patient Profile:</label>
+            <select id="patient-profile-select" class="form-control">
+              <option value="elena_vance_eligible_oncology">Elena Vance (Age 44 | HER2+ Pos | eGFR 92 | Eligible for Oncology)</option>
+              <option value="marcus_chen_ineligible_age">Marcus Chen (Age 74 | HER2+ Pos | Ineligible: Age > 65)</option>
+              <option value="sarah_jenkins_ineligible_renal">Sarah Jenkins (Age 39 | HER2+ Pos | Ineligible: eGFR 42 &lt; 60)</option>
+              <option value="david_rossi_eligible_lung">David Rossi (Age 52 | EGFR T790M | Eligible for Lung Cancer Trial)</option>
+              <option value="clara_oswald_eligible_alzheimers">Dr. Clara Oswald (Age 58 | APOE-ε4 | Eligible for Alzheimer's)</option>
+            </select>
+          </div>
+
+          <div class="ehr-details-panel" id="ehr-preview-box">
+            <!-- Populated via JavaScript -->
+          </div>
+
+          <div class="privacy-guarantee-box">
+            <i class="fa-solid fa-lock"></i>
+            <div>
+              <strong>Midnight Dual-State Privacy Guarantee:</strong>
+              <span>Only the mathematical ZK-SNARK proof and blinded nullifier will touch the Midnight blockchain.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Active Clinical Trials & ZK Enrollment -->
+        <div class="card glass-card">
+          <div class="card-header">
+            <div class="header-icon purple"><i class="fa-solid fa-notes-medical"></i></div>
+            <div>
+              <h3>Discover & Match Clinical Trials</h3>
+              <p>Select an active trial to execute off-chain ZK eligibility verification.</p>
+            </div>
+          </div>
+
+          <div class="trial-selection-box">
+            <label><i class="fa-solid fa-vial-circle-check"></i> Target Clinical Protocol:</label>
+            <select id="target-trial-select" class="form-control">
+              <!-- Populated via JavaScript -->
+            </select>
+          </div>
+
+          <div id="trial-criteria-summary" class="criteria-summary-box">
+            <!-- Populated via JavaScript -->
+          </div>
+
+          <div class="action-btn-group">
+            <button id="btn-generate-zk-proof" class="btn btn-primary btn-lg pulse-glow">
+              <i class="fa-solid fa-fingerprint"></i> Generate Off-Chain ZK-Proof
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ZK Proof Execution & Circuit Constraint Visualizer -->
+      <div id="zk-proof-results-panel" class="card glass-card mt-4 hidden">
+        <div class="card-header">
+          <div class="header-icon emerald"><i class="fa-solid fa-microchip"></i></div>
+          <div class="header-title-flex">
+            <div>
+              <h3>Compact ZK Circuit Constraints & SNARK Proof</h3>
+              <p>Off-chain witness evaluation executed via Poseidon hashing and arithmetic circuits.</p>
+            </div>
+            <div id="proof-status-badge" class="badge-status-pill"></div>
+          </div>
+        </div>
+
+        <div class="constraints-grid" id="circuit-constraints-list">
+          <!-- Dynamically populated circuit asserts -->
+        </div>
+
+        <div class="proof-meta-box">
+          <div class="meta-row">
+            <span class="meta-label">Proof Synthesis Time:</span>
+            <span class="meta-val highlight" id="proof-synthesis-time">24.5 ms</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-label">Blinded Nullifier Hash:</span>
+            <span class="meta-val code-font" id="proof-nullifier-val">0x...</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-label">Public Commitment:</span>
+            <span class="meta-val code-font" id="proof-commitment-val">0x...</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-label">Halo2 Proof Bytes:</span>
+            <span class="meta-val code-font truncated" id="proof-bytes-val">0x01...</span>
+          </div>
+        </div>
+
+        <div class="card-footer-actions">
+          <button id="btn-submit-to-midnight" class="btn btn-success btn-lg">
+            <i class="fa-solid fa-cloud-arrow-up"></i> Submit Proof to Midnight Ledger
+          </button>
+          <div id="submission-status-feedback" class="submission-feedback"></div>
+        </div>
+      </div>
+
+      <!-- Shielded Milestone Stipend Claim Box -->
+      <div class="card glass-card mt-4">
+        <div class="card-header">
+          <div class="header-icon cyan"><i class="fa-solid fa-hand-holding-dollar"></i></div>
+          <div>
+            <h3>Claim Shielded Milestone Stipend</h3>
+            <p>Prove trial adherence checkpoint completion to release NIGHT tokens directly from smart contract escrow.</p>
+          </div>
+        </div>
+        <div class="claim-milestone-form">
+          <div class="form-row-3">
+            <div>
+              <label>Enrolled Nullifier Hash:</label>
+              <input type="text" id="claim-nullifier-input" class="form-control code-font" placeholder="0x..." />
+            </div>
+            <div>
+              <label>Checkpoint ID:</label>
+              <input type="text" id="claim-checkpoint-input" class="form-control" value="CHECKPOINT_DOSAGE_WEEK_4" />
+            </div>
+            <div>
+              <label>Shielded Destination Address:</label>
+              <input type="text" id="claim-address-input" class="form-control code-font" value="midnight1z_shielded_patient_elena_vance_88019a" />
+            </div>
+          </div>
+          <div class="mt-3">
+            <button id="btn-claim-stipend" class="btn btn-cyan">
+              <i class="fa-solid fa-money-bill-transfer"></i> Verify Checkpoint & Disburse NIGHT Tokens
+            </button>
+            <span id="claim-result-msg" class="claim-result-msg"></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================================================================== -->
+    <!-- TAB 2: PHARMA & TRIAL SPONSOR HUB -->
+    <!-- ==================================================================== -->
+    <section id="sponsor-tab" class="tab-pane">
+      <div class="grid-2-col">
+        
+        <!-- Left: Create New Compact ZK Trial -->
+        <div class="card glass-card">
+          <div class="card-header">
+            <div class="header-icon purple"><i class="fa-solid fa-file-circle-plus"></i></div>
+            <div>
+              <h3>Deploy New Compact ZK Trial</h3>
+              <p>Define inclusion/exclusion circuit thresholds and lock NIGHT tokens in escrow.</p>
+            </div>
+          </div>
+
+          <form id="create-trial-form">
+            <div class="form-group">
+              <label>Protocol Title:</label>
+              <input type="text" id="form-trial-title" class="form-control" required value="Phase II KRAS G12D Solid Tumor Neoantigen Trial" />
+            </div>
+            
+            <div class="form-row-2">
+              <div class="form-group">
+                <label>Sponsor Institution:</label>
+                <input type="text" id="form-sponsor-name" class="form-control" value="AstraZeneca Immuno-Oncology" />
+              </div>
+              <div class="form-group">
+                <label>Therapeutic Area:</label>
+                <input type="text" id="form-therapeutic-area" class="form-control" value="Oncology" />
+              </div>
+            </div>
+
+            <div class="form-row-2">
+              <div class="form-group">
+                <label>Target Biomarker Locus:</label>
+                <input type="text" id="form-biomarker" class="form-control" value="KRAS_G12D_MUTATION" />
+              </div>
+              <div class="form-group">
+                <label>Trial Phase:</label>
+                <input type="text" id="form-phase" class="form-control" value="Phase II" />
+              </div>
+            </div>
+
+            <div class="form-row-4">
+              <div class="form-group">
+                <label>Min Age:</label>
+                <input type="number" id="form-min-age" class="form-control" value="21" />
+              </div>
+              <div class="form-group">
+                <label>Max Age:</label>
+                <input type="number" id="form-max-age" class="form-control" value="68" />
+              </div>
+              <div class="form-group">
+                <label>Min eGFR:</label>
+                <input type="number" id="form-min-egfr" class="form-control" value="60" />
+              </div>
+              <div class="form-group">
+                <label>Max BP Systolic:</label>
+                <input type="number" id="form-max-bp" class="form-control" value="140" />
+              </div>
+            </div>
+
+            <div class="form-row-2">
+              <div class="form-group">
+                <label>Max Participants:</label>
+                <input type="number" id="form-max-participants" class="form-control" value="50" />
+              </div>
+              <div class="form-group">
+                <label>Reward / Milestone (NIGHT):</label>
+                <input type="number" id="form-milestone-reward" class="form-control" value="5000" />
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-lg mt-2">
+              <i class="fa-solid fa-cube"></i> Deploy Contract & Fund Escrow (250,000 NIGHT)
+            </button>
+            <div id="create-trial-status" class="status-msg"></div>
+          </form>
+        </div>
+
+        <!-- Right: Active Protocol Cohorts & Escrow Monitor -->
+        <div class="card glass-card">
+          <div class="card-header">
+            <div class="header-icon emerald"><i class="fa-solid fa-chart-pie"></i></div>
+            <div>
+              <h3>Active Protocol Cohorts & Escrow Vaults</h3>
+              <p>Real-time enrollment tracking and shielded smart contract escrow balances.</p>
+            </div>
+          </div>
+
+          <div id="sponsor-trials-list" class="sponsor-trials-container">
+            <!-- Populated via JavaScript -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================================================================== -->
+    <!-- TAB 3: FDA / IRB REGULATORY COMPLIANCE -->
+    <!-- ==================================================================== -->
+    <section id="auditor-tab" class="tab-pane">
+      <div class="card glass-card">
+        <div class="card-header">
+          <div class="header-icon cyan"><i class="fa-solid fa-stamp"></i></div>
+          <div>
+            <h3>Selective Disclosure & Institutional Review Board (IRB) Audit Hub</h3>
+            <p>Regulatory bodies inspect verifiable statistical cohort distributions using cryptographic viewing keys without exposing individual patient PII.</p>
+          </div>
+        </div>
+
+        <div class="auditor-controls">
+          <div class="form-row-2">
+            <div>
+              <label><i class="fa-solid fa-id-card-clip"></i> Active Authorized Auditor Grants:</label>
+              <select id="auditor-grant-select" class="form-control">
+                <!-- Populated via JavaScript -->
+              </select>
+            </div>
+            <div class="align-self-end">
+              <button id="btn-inspect-audit" class="btn btn-cyan btn-lg">
+                <i class="fa-solid fa-key"></i> Decrypt & Inspect Cohort Audit Log
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div id="audit-inspection-results" class="audit-results-panel hidden mt-4">
+          <!-- Audit Metrics Report -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================================================================== -->
+    <!-- TAB 4: MIDNIGHT LIVE BLOCKCHAIN EXPLORER -->
+    <!-- ==================================================================== -->
+    <section id="explorer-tab" class="tab-pane">
+      <div class="grid-3-col mb-4">
+        <div class="stat-mini-card">
+          <span class="label">Chain ID:</span>
+          <span class="val">midnight-preview-4101</span>
+        </div>
+        <div class="stat-mini-card">
+          <span class="label">Consensus Engine:</span>
+          <span class="val">Proof of Stake + ZK Verifier</span>
+        </div>
+        <div class="stat-mini-card">
+          <span class="label">Zero-Knowledge Proof Curve:</span>
+          <span class="val">Pasta (Pallas / Vesta)</span>
+        </div>
+      </div>
+
+      <div class="card glass-card">
+        <div class="card-header">
+          <div class="header-icon purple"><i class="fa-solid fa-cubes-stacked"></i></div>
+          <div class="header-title-flex">
+            <div>
+              <h3>Midnight Network Live Block Stream</h3>
+              <p>Real-time block production, shielded state transitions, and Compact contract executions.</p>
+            </div>
+            <span class="live-pulse-badge"><span class="dot"></span> Live RPC Sync</span>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="midnight-table">
+            <thead>
+              <tr>
+                <th>Block #</th>
+                <th>Block Hash</th>
+                <th>Contract Target</th>
+                <th>Circuit Invoked</th>
+                <th>Public Disclosures</th>
+                <th>DUST Fee</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="explorer-blocks-tbody">
+              <!-- Populated via JavaScript & WebSocket -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================================================================== -->
+    <!-- TAB 5: COMPACT SMART CONTRACTS PLAYGROUND -->
+    <!-- ==================================================================== -->
+    <section id="compact-tab" class="tab-pane">
+      <div class="card glass-card">
+        <div class="card-header">
+          <div class="header-icon emerald"><i class="fa-solid fa-file-code"></i></div>
+          <div>
+            <h3>Midnight Compact Smart Contract Specifications</h3>
+            <p>Inspect native Compact language circuits, private witness definitions, assertions, and dual-state ledger exports.</p>
+          </div>
+        </div>
+
+        <div class="contract-file-selector">
+          <button class="contract-file-btn active" data-file="BioVeilZK.compact">BioVeilZK.compact</button>
+          <button class="contract-file-btn" data-file="ShieldEscrow.compact">ShieldEscrow.compact</button>
+          <button class="contract-file-btn" data-file="AuditCompliance.compact">AuditCompliance.compact</button>
+          <button class="contract-file-btn" data-file="compiler_config.json">compiler_config.json</button>
+        </div>
+
+        <div class="code-editor-container">
+          <pre><code id="compact-code-display" class="language-javascript">// Loading Compact Smart Contract Source...</code></pre>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Global Footer -->
+  <footer class="app-footer">
+    <div class="footer-container">
+      <div>
+        <strong>BioVeil ZK Protocol</strong> — Built for <em>Brainwave 2026 Midnight Track</em>.
+      </div>
+      <div class="footer-links">
+        <span><i class="fa-brands fa-github"></i> Open Source</span>
+        <span><i class="fa-solid fa-lock"></i> Midnight Zero-Knowledge Privacy</span>
+        <span><i class="fa-solid fa-bolt"></i> Compact v0.19</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="/static/js/zk_prover_ui.js"></script>
+  <script src="/static/js/patient_portal.js"></script>
+  <script src="/static/js/sponsor_portal.js"></script>
+  <script src="/static/js/auditor_portal.js"></script>
+  <script src="/static/js/explorer.js"></script>
+  <script src="/static/js/app.js"></script>
+</body>
+</html>

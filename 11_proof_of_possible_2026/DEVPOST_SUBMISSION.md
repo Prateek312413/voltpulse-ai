@@ -35,8 +35,8 @@ Generative AI models produce highly fluent, plausible-sounding assertions that o
 
 * **Local Zero-Config Launcher**:
   ```bash
-  git clone https://github.com/Prateek312413/BrainWave.git
-  cd BrainWave
+  git clone https://github.com/Prateek312413/proof_of_possible.git
+  cd proof_of_possible
   pip install -r requirements.txt
   python run.py
   ```
