@@ -139,10 +139,12 @@
                         </label>
                         <select id="domain-select" class="bg-dark-900 border border-dark-600 text-xs rounded-lg px-2.5 py-1.5 text-slate-300 focus:outline-none focus:border-emerald-500 font-medium">
                             <option value="general">Domain: General Multi-Disciplinary</option>
-                            <option value="biomedical">Domain: Biomedical & Clinical</option>
-                            <option value="energy">Domain: Clean Energy & Materials</option>
-                            <option value="ai_security">Domain: AI Systems & Security</option>
-                            <option value="esg">Domain: ESG & Climate Regulatory</option>
+                            <option value="biomedical">Domain: Biomedical & Clinical (AegisMed)</option>
+                            <option value="energy">Domain: Clean Energy & Batteries (VoltPulse)</option>
+                            <option value="silicon_ai">Domain: AI Silicon & NKI Kernels (Trainium2)</option>
+                            <option value="mathematics">Domain: Symbolic Proofs & CAS (SynapseFlow)</option>
+                            <option value="accessibility">Domain: Assistive Speech DSP (NeuroAccess)</option>
+                            <option value="esg">Domain: ESG & ISO 14064 Carbon Accounting</option>
                         </select>
                     </div>
 
@@ -374,7 +376,9 @@
             // Set matching domain
             if (id.includes('CLINICAL')) document.getElementById('domain-select').value = 'biomedical';
             else if (id.includes('ENERGY')) document.getElementById('domain-select').value = 'energy';
-            else if (id.includes('AI')) document.getElementById('domain-select').value = 'ai_security';
+            else if (id.includes('SILICON')) document.getElementById('domain-select').value = 'silicon_ai';
+            else if (id.includes('MATH')) document.getElementById('domain-select').value = 'mathematics';
+            else if (id.includes('ACCESSIBILITY')) document.getElementById('domain-select').value = 'accessibility';
             else if (id.includes('ESG')) document.getElementById('domain-select').value = 'esg';
             
             runVerification();

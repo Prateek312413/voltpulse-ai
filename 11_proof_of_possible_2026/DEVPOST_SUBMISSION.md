@@ -96,7 +96,26 @@ Generative AI models produce highly fluent, plausible-sounding assertions that o
 
 ---
 
-### 8. Known Limitations, Risks, Privacy Concerns & Future Improvements
+### 8. What We Learned & Key Breakthroughs
+
+* **Causal Decomposition Prevents Hallucination Drift**: Splitting complex compound claims into atomic predicate tuples isolates falsifiable claims without losing context.
+* **Bayesian Priors Beat Arbitrary Confidence Percentages**: Using Beta-Binomial conjugate updating grounded in empirical evidence sources eliminates arbitrary LLM probability hallucinations.
+* **Adversarial Red-Teaming Exposes Hidden Assumptions**: Multi-agent cross-examination catches domain-specific contraindications (such as antibiotic cross-reactivity or battery fast-charging thermal limits) that standard single-prompt systems overlook.
+
+---
+
+### 9. Team Members & Cross-Disciplinary Engineering Pedigree
+
+* **Prateek (Lead Architect & Systems Engineer)**:
+  - **Clinical & Biomedical AI**: Designed hierarchical 4-tier agentic memory systems, Bayesian GPR uncertainty engines, and pharmacovigilance safety shields (*AegisMed* / CockroachDB × AWS).
+  - **Cyber-Physical Edge Systems & Battery Electrochemistry**: Architected 10Hz automotive CAN-bus (SAE J1939), Randles ECM Nyquist modeling, sub-25μs thermal runaway contactor tripping, and late IoT telemetry reconciliation (*VoltPulse AI* & *Battery Health Forecast Engine*).
+  - **AI Silicon & Hardware Co-Design**: Engineered custom Neuron Kernel Interface (NKI) Tiled FlashAttention, SBUF fused kernels, and 5th-order Newton-Schulz Muon optimizers for AWS Trainium2 (*NeuronFrontier-LM*).
+  - **Symbolic Verification & Autonomous Agent Swarms**: Built multi-LLM orchestration pipelines with Wolfram Research symbolic computation oracles (*SynapseFlow*).
+  - **Assistive Neuro-Adaptive DSP**: Implemented spectral subtraction and LPC formant phoneme reconstruction for ALS and dysarthria speech accessibility (*NeuroAccess AI*).
+
+---
+
+### 10. Known Limitations, Risks, Privacy Concerns & Future Improvements
 
 * **Limitations**: Current in-memory knowledge corpus is tailored to benchmark domains; expanding to live PubMed, arXiv, and SEC EDGAR connectors via MCP (Model Context Protocol) is the next milestone.
 * **Privacy & Security**: All claim parsing and Merkle hashing run 100% locally with zero data sent to third-party cloud servers.
