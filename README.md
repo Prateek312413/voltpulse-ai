@@ -103,6 +103,8 @@ pytest tests/ -v
 ├── 07_neuralsprint_2026/           <-- NeuroAccess AI: NeuralSprint Submission
 ├── 08_hacksocial_2026/             <-- ResilioNet AI: HackSocial Submission
 ├── 11_proof_of_possible_2026/      <-- EvidenceMesh: Proof of Possible 2026 Submission
+├── 12_midnight_bioveil_zk/         <-- BioVeil: Midnight ZK Privacy Submission
+├── 13_catalyst_2026/               <-- ObsidioCore: CISSA Catalyst 2026 Flagship Submission
 ├── aegismed/                       <-- Core AegisMed Application Package
 │   ├── agents/                     <-- Triage, Diagnostic, Pharma, Reflection, Swarm Orchestrator
 │   ├── database/                   <-- CockroachDB Models, Migrations, Connection Pool
