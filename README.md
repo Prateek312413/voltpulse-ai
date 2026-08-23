@@ -105,6 +105,10 @@ pytest tests/ -v
 ├── 11_proof_of_possible_2026/      <-- EvidenceMesh: Proof of Possible 2026 Submission
 ├── 12_midnight_bioveil_zk/         <-- BioVeil: Midnight ZK Privacy Submission
 ├── 13_catalyst_2026/               <-- ObsidioCore: CISSA Catalyst 2026 Flagship Submission
+├── 14_gatewaygs_2026/              <-- TerraPulse AI: GatewayGS AI 4 Earth Submission
+├── 15_prompt_wars_2026/            <-- PromptShield AI: Prompt Wars 2026 Flagship Submission
+├── 16_impact_forge_2026/            <-- Impact Forge 2026 Submission
+├── 17_brainwave_2026/               <-- AegisCredit ZK: Brainwave 2026 Midnight Track Submission
 ├── aegismed/                       <-- Core AegisMed Application Package
 │   ├── agents/                     <-- Triage, Diagnostic, Pharma, Reflection, Swarm Orchestrator
 │   ├── database/                   <-- CockroachDB Models, Migrations, Connection Pool
