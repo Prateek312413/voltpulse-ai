@@ -109,6 +109,7 @@ pytest tests/ -v
 ├── 15_prompt_wars_2026/            <-- PromptShield AI: Prompt Wars 2026 Flagship Submission
 ├── 16_impact_forge_2026/            <-- Impact Forge 2026 Submission
 ├── 17_brainwave_2026/               <-- AegisCredit ZK: Brainwave 2026 Midnight Track Submission
+├── 18_prometheus_august_ai_challenge/ <-- Promethea AI: Prometheus August AI Challenge Grand Prize Submission
 ├── aegismed/                       <-- Core AegisMed Application Package
 │   ├── agents/                     <-- Triage, Diagnostic, Pharma, Reflection, Swarm Orchestrator
 │   ├── database/                   <-- CockroachDB Models, Migrations, Connection Pool
